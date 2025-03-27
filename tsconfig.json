@@ -1,0 +1,13 @@
+{
+        "compilerOptions": {
+                "module": "ESNext",
+                "target": "ESNext",
+                "moduleResolution": "bundler",
+                "paths": {
+                        "@utils/*": ["./src/utils/*"],
+                        "@elements/*": ["./src/elements/*"]
+                },
+                "esModuleInterop": true
+        },
+        "exclude": ["node_modules"]
+}
