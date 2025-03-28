@@ -11,10 +11,10 @@
 		"@preact/signals-core": "^1.8.0"
 	},
 	"scripts": {
-		"build": "bun build src/index.ts --outdir ./dist --minify",
+		"build": "bun build src/ph.ts --outdir ./dist --minify",
 		"test": "bun test",
 		"format": "prettier --write ./src/**/*.ts"
 	},
-	"browser": "dist/index.js",
+	"browser": "dist/ph.js",
 	"type": "module"
 }
