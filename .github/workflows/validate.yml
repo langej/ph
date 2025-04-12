@@ -1,0 +1,28 @@
+name: Run Tests on Pull Requests
+
+on:
+    pull_request:
+        types: [opened, synchronize, reopened]
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+        -   name: Checkout Repository
+            uses: actions/checkout@v3
+
+        -   name: Set up Bun
+            uses: oven-sh/setup-bun@v1
+            with:
+                bun-version: latest
+
+        -   name: Install Dependencies
+            run: bun install
+
+        -   name: Run Tests
+            run: npm run test
+
+        -   name: Set up status check
+            uses: actions/check-status@v3
+            with:
+                status: success  # Oder 'failure' je nach Ergebnis der Tests
