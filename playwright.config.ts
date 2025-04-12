@@ -7,6 +7,7 @@ const config: PlaywrightTestConfig = {
                 headless: true,
                 viewport: { width: 1280, height: 720 },
                 screenshot: 'only-on-failure',
+                video: 'off',
         },
         projects: [
                 {
@@ -27,6 +28,9 @@ const config: PlaywrightTestConfig = {
                 url: 'http://localhost:3111',
                 reuseExistingServer: true,
         },
+        retries: process.env.CI ? 2 : 0,
+        reporter: process.env.CI ? [['github'], ['list']] : 'list',
+        workers: process.env.CI ? 2 : undefined,
 }
 
 export default config
