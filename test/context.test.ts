@@ -1,15 +1,5 @@
 import test, { expect } from '@playwright/test'
 import { createContent, debug } from './utils'
-import http from 'http'
-
-test.beforeAll(async ({ browser }) => {
-        // Start test server
-        const server = http.createServer((req, res) => {
-                res.writeHead(200)
-                res.end()
-        })
-        server.listen(3111)
-})
 
 test('test ph-signal', async ({ page }) => {
         let count = 42
