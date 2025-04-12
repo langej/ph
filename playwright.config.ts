@@ -13,15 +13,20 @@ const config: PlaywrightTestConfig = {
                         name: 'chromium',
                         use: { browserName: 'chromium' },
                 },
-                // {
-                //         name: 'firefox',
-                //         use: { browserName: 'firefox' },
-                // },
-                // {
-                //         name: 'webkit',
-                //         use: { browserName: 'webkit' },
-                // },
+                {
+                        name: 'firefox',
+                        use: { browserName: 'firefox' },
+                },
+                {
+                        name: 'webkit',
+                        use: { browserName: 'webkit' },
+                },
         ],
+        webServer: {
+                command: 'bun run test-server',
+                url: 'http://localhost:3111',
+                reuseExistingServer: true,
+        },
 }
 
 export default config

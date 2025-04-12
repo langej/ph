@@ -14,7 +14,8 @@
 	"scripts": {
 		"build": "bun build src/ph.ts --outdir ./dist --minify",
 		"test": "bun run build && bunx playwright test",
-		"format": "prettier --write ./src/**/*.ts"
+		"format": "prettier --write ./src/**/*.ts",
+		"test-server": "bunx http-server -p 3111"
 	},
 	"browser": "dist/ph.js",
 	"type": "module"
