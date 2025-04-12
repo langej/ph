@@ -1,5 +1,5 @@
 import { signal, effect } from '@preact/signals-core'
-import { PhFor } from '@elements/controlFlow/For'
+import { PhFor } from '@elements/control-flow/For'
 import { Base } from '@utils/Base'
 import { createContextMethod, noTemplateTreeWalker, defineComponent, phSlotSyntax } from '@utils/Utils'
 import { processAttributesForChildrenElements, renameShortcutAttributesInTemplate } from '@utils/Attributes'
