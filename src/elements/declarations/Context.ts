@@ -1,18 +1,22 @@
 import { Base } from '@utils/Base'
 import { createContextMethod } from '@utils/Utils'
 import { createContextComputed } from '@utils/Utils'
-import { signal, type Signal, type ReadonlySignal } from '@preact/signals-core'
+import { signal, type Signal, type ReadonlySignal, effect } from '@preact/signals-core'
 
-const getTypedValue = ({ value, context }: { value: string; context: Context }) => {
-        return createContextMethod(context, `return ${value}`)()
-}
-
-const getAttributes = (element: Base) => {
-        const context = element.getHost()?.[CONTEXT]
-        const name = element.getAttribute('name')
-        const value = element.getAttribute('value')
-        return { context, name, value }
-}
+const //
+        getTypedValue = ({ value, context }: { value: string; context: Context }) => {
+                try {
+                        return createContextMethod(context, `return ${value}`)()
+                } catch (error) {
+                        console.error(error)
+                }
+        },
+        getAttributes = (element: Base) => {
+                const context = element.getHost()?.[CONTEXT]
+                const name = element.getAttribute('name')
+                const value = element.getAttribute('value')
+                return { context, name, value }
+        }
 
 export const //
         CONTEXT = Symbol(),
@@ -20,6 +24,7 @@ export const //
         ADD_COMPUTED = Symbol(),
         ADD_METHOD = Symbol(),
         ADD_CONST = Symbol()
+
 export class Context {
         static from(parentContext: Context | undefined) {
                 if (parentContext instanceof Context) {
@@ -68,6 +73,9 @@ export class PhSignal extends Base {
                 if (name && value && context) {
                         const typedValue = getTypedValue({ value, context })
                         context[ADD_SIGNAL](name, signal(typedValue))
+                        const localStoragePrefix = this.getAttribute('local-storage')
+                        // handle local-storage
+                        handleLocalStorage(localStoragePrefix, name, context)
                 }
                 this.remove()
         }
@@ -117,5 +125,18 @@ export class PhMethod extends Base {
                         if (!body) this.log('no body provided!')
                 }
                 this.remove()
+        }
+}
+
+function handleLocalStorage(localStoragePrefix: string, name: string, context: Context) {
+        if (localStoragePrefix !== null) {
+                const prefix = !!localStoragePrefix ? localStoragePrefix + '/' : ''
+                const key = prefix + name
+                console.log({ prefix, key, localStoragePrefix })
+                const localStorageValue = localStorage.getItem(key)
+                if (localStorageValue) context[name] = JSON.parse(localStorageValue)
+                effect(() => {
+                        localStorage.setItem(key, JSON.stringify(context[name]))
+                })
         }
 }

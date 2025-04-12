@@ -72,7 +72,6 @@ export function processAttributes(element: Element, context: Context) {
                                 disposes.push(
                                         effect(() => {
                                                 if (computed.value !== undefined && computed.value !== null)
-                                                        // @ts-ign
                                                         element.setAttribute(name, computed.value as string)
                                                 else element.removeAttribute(name)
                                         }),
