@@ -1,33 +1,33 @@
 name: Build and Push Dist
 
 on:
-    push:
-        branches:
-            - main
+    pull_request:
+        types: [closed]
 
 jobs:
-    build:
+    build-and-push:
+        if: github.event.pull_request.merged == true
         runs-on: ubuntu-latest
 
         steps:
-            -   name: Checkout Repository
+            -   name: Checkout code
                 uses: actions/checkout@v4
 
             -   name: Set up Bun
                 uses: oven-sh/setup-bun@v1
-                with:
-                    bun-version: latest
 
-            -   name: Install Dependencies
+            -   name: Install dependencies
                 run: bun install
 
-            -   name: Build Project
+            -   name: Build project
                 run: bun run build
 
-            -   name: Commit and Push Changes
+            -   name: Push /dist to main (optional)
                 run: |
-                    git config --global user.name "github-actions[bot]"
-                    git config --global user.email "github-actions[bot]@users.noreply.github.com"
-                    git add dist/
-                    git commit -m "Build dist folder [skip ci]" || exit 0
+                    git config user.name "github-actions[bot]"
+                    git config user.email "github-actions[bot]@users.noreply.github.com"
+                    git add dist
+                    git commit -m "Update dist after PR merge"
                     git push
+                    env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
