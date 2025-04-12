@@ -132,7 +132,6 @@ function handleLocalStorage(localStoragePrefix: string, name: string, context: C
         if (localStoragePrefix !== null) {
                 const prefix = !!localStoragePrefix ? localStoragePrefix + '/' : ''
                 const key = prefix + name
-                console.log({ prefix, key, localStoragePrefix })
                 const localStorageValue = localStorage.getItem(key)
                 if (localStorageValue) context[name] = JSON.parse(localStorageValue)
                 effect(() => {
