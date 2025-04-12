@@ -7,6 +7,7 @@ import { processAttributes, processAttributesForChildrenElements } from '@utils/
 export class PhIf extends Base {
         #disposes = []
         #children
+
         mount() {
                 this.#children = this.childNodes
                 this.style.display = 'inline flow'
@@ -19,11 +20,8 @@ export class PhIf extends Base {
                         this.#disposes.push(
                                 effect(() => {
                                         const v = computed.value
-                                        if (v === true) {
-                                                this.append(...this.#children)
-                                        } else {
-                                                this.#children = Array.from(this.childNodes).map((e) => this.removeChild(e))
-                                        }
+                                        if (v === true) this.append(...this.#children)
+                                        else this.#children = Array.from(this.childNodes).map((e) => this.removeChild(e))
                                 }),
                         )
                 }

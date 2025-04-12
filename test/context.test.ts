@@ -80,11 +80,6 @@ test('test local storage persistence', async ({ page }) => {
                 <test-div></test-div>
                 `),
         )
-        // const storage = await context.storageState()
-        // const localStorage = storage.origins[0].localStorage
-        // expect(localStorage.find((it) => it.name == 'username')?.value).toBe('John Doe')
-        // expect(localStorage.find((it) => it.name == 'test/count')?.value).toBe('0')
-        await page.waitForTimeout(1000)
         expect(page.locator('#username')).toHaveText('John Doe')
         expect(page.locator('#count')).toHaveText('0')
         const localStorageData = await page.evaluate(() => {

@@ -12,10 +12,23 @@ const //
                 }
         },
         getAttributes = (element: Base) => {
-                const context = element.getHost()?.[CONTEXT]
-                const name = element.getAttribute('name')
-                const value = element.getAttribute('value')
+                const //
+                        context = element.getHost()?.[CONTEXT],
+                        name = element.getAttribute('name'),
+                        value = element.getAttribute('value')
                 return { context, name, value }
+        },
+        handleLocalStorage = (localStoragePrefix: string, name: string, context: Context) => {
+                if (localStoragePrefix !== null) {
+                        const //
+                                prefix = !!localStoragePrefix ? localStoragePrefix + '/' : '',
+                                key = prefix + name,
+                                localStorageValue = localStorage.getItem(key)
+                        if (localStorageValue) context[name] = JSON.parse(localStorageValue)
+                        effect(() => {
+                                localStorage.setItem(key, JSON.stringify(context[name]))
+                        })
+                }
         }
 
 export const //
@@ -69,12 +82,12 @@ export class Context {
 
 export class PhSignal extends Base {
         mount() {
-                const { context, name, value } = getAttributes(this)
+                const { name, value, context } = getAttributes(this)
                 if (name && value && context) {
-                        const typedValue = getTypedValue({ value, context })
+                        const //
+                                typedValue = getTypedValue({ value, context }),
+                                localStoragePrefix = this.getAttribute('local-storage')
                         context[ADD_SIGNAL](name, signal(typedValue))
-                        const localStoragePrefix = this.getAttribute('local-storage')
-                        // handle local-storage
                         handleLocalStorage(localStoragePrefix, name, context)
                 }
                 this.remove()
@@ -83,7 +96,7 @@ export class PhSignal extends Base {
 
 export class PhComputed extends Base {
         mount() {
-                const { context, name, value } = getAttributes(this)
+                const { name, value, context } = getAttributes(this)
                 if (name && value && context) {
                         const typedValue = createContextComputed(context, value)
                         context[ADD_COMPUTED](name, typedValue)
@@ -94,7 +107,7 @@ export class PhComputed extends Base {
 
 export class PhConst extends Base {
         mount() {
-                const { context, name, value } = getAttributes(this)
+                const { name, value, context } = getAttributes(this)
                 if (name && value && context) {
                         const typedValue = getTypedValue({ value, context })
                         context[ADD_CONST](name, typedValue)
@@ -106,17 +119,18 @@ export class PhConst extends Base {
 export class PhMethod extends Base {
         mount() {
                 this.style.display = 'none'
-                const { context, name } = getAttributes(this)
-                const scriptElement = this.firstElementChild
-                const args = scriptElement
-                        .getAttribute('args')
-                        ?.split(',')
-                        ?.map((arg) => {
-                                const [argName, argType] = arg.split(':').map((a) => a.trim())
-                                return { name: argName, type: argType }
-                        })
-                const joined = args?.map((arg) => arg.name).join(',')
-                const body = scriptElement?.textContent.replace(/&gt;/g, '>').replace(/&lt;/g, '<').trim() ?? ''
+                const //
+                        { context, name } = getAttributes(this),
+                        scriptElement = this.firstElementChild,
+                        body = scriptElement?.textContent.replace(/&gt;/g, '>').replace(/&lt;/g, '<').trim() ?? '',
+                        args = scriptElement
+                                .getAttribute('args')
+                                ?.split(',')
+                                ?.map((arg) => {
+                                        const [argName, argType] = arg.split(':').map((a) => a.trim())
+                                        return { name: argName, type: argType }
+                                }),
+                        joined = args?.map((arg) => arg.name).join(',')
                 if (context && body) {
                         const method = createContextMethod(context, body, joined)
                         context[ADD_METHOD](name, method)
@@ -125,17 +139,5 @@ export class PhMethod extends Base {
                         if (!body) this.log('no body provided!')
                 }
                 this.remove()
-        }
-}
-
-function handleLocalStorage(localStoragePrefix: string, name: string, context: Context) {
-        if (localStoragePrefix !== null) {
-                const prefix = !!localStoragePrefix ? localStoragePrefix + '/' : ''
-                const key = prefix + name
-                const localStorageValue = localStorage.getItem(key)
-                if (localStorageValue) context[name] = JSON.parse(localStorageValue)
-                effect(() => {
-                        localStorage.setItem(key, JSON.stringify(context[name]))
-                })
         }
 }
