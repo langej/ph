@@ -4,10 +4,11 @@ import { createContent } from './utils'
 test('test basic component declaration', async ({ page }) => {
         await page.setContent(
                 createContent(/*html*/ `
-                <ph-component>
-                        <template tag="test-div">
+                <ph-component tag="test-div">
+                        <template>
                                 <div>Hello World</div>
                         </template>
+                        <h1>hello</h1>
                 </ph-component>
 
                 <test-div></test-div>
@@ -20,9 +21,8 @@ test('test basic component declaration', async ({ page }) => {
 test('test component with attributes', async ({ page }) => {
         await page.setContent(
                 createContent(/*html*/ `
-                <ph-component>
-                        <template tag="test-div">
-                                <attribute name="value"></attribute>
+                <ph-component tag="test-div">
+                        <template attributes="value">
                                 <div>Hello {{ value }}</div>
                         </template>
                 </ph-component>
@@ -42,8 +42,8 @@ test('test component with attributes', async ({ page }) => {
 test('test component with events', async ({ page }) => {
         await page.setContent(
                 createContent(/*html*/ `
-                <ph-component>
-                        <template tag="test-div">
+                <ph-component tag="test-div">
+                        <template>
                                 <ph-signal name="count" value="0"></ph-signal>
                                 <ph-computed name="doubled" value="count * 2"></ph-computed>
 

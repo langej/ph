@@ -4,11 +4,11 @@ import { createContent, debug } from './utils'
 test('test ph-for element', async ({ page }) => {
         await page.setContent(
                 createContent(/*html*/ `
-                <ph-component>
-                        <template tag="test-div">
+                <ph-component tag="test-div">
+                        <template>
                                 <ph-signal name="items" value="[1, 2, 3]"></ph-signal>
 
-                                <ph-for each="item, idx in items">
+                                <ph-for *each="item, idx in items">
                                         <template>
                                                 <div :id="'id' + '-' + idx">{{ item }}</div>
                                         </template>
@@ -28,12 +28,12 @@ test('test ph-for element', async ({ page }) => {
 test('test for template element with parent element', async ({ page }) => {
         await page.setContent(
                 createContent(/*html*/ `
-                <ph-component>
-                        <template tag="test-div">
+                <ph-component tag="test-div">
+                        <template>
                                 <ph-signal name="items" value="[1, 2, 3]"></ph-signal>
 
                                 <div>
-                                        <template each="item, idx in items">
+                                        <template *each="item, idx in items">
                                                 <div :id="'id' + '-' + idx">{{ item }}</div>
                                         </template>
                                 </div>
@@ -52,11 +52,11 @@ test('test for template element with parent element', async ({ page }) => {
 test('test for template element without parent element', async ({ page }) => {
         await page.setContent(
                 createContent(/*html*/ `
-                <ph-component>
-                        <template tag="test-div">
+                <ph-component tag="test-div">
+                        <template>
                                 <ph-signal name="items" value="[1, 2, 3]"></ph-signal>
 
-                                <template each="item, idx in items">
+                                <template *each="item, idx in items">
                                         <div :id="'id' + '-' + idx">{{ item }}</div>
                                 </template>
                         </template>
@@ -74,11 +74,11 @@ test('test for template element without parent element', async ({ page }) => {
 test('for element should adapt to length changes', async ({ page }) => {
         await page.setContent(
                 createContent(/*html*/ `
-                <ph-component>
-                        <template tag="test-div">
+                <ph-component tag="test-div">
+                        <template>
                                 <ph-signal name="items" value="[1, 2, 3]"></ph-signal>
 
-                                <template each="item, idx in items">
+                                <template *each="item, idx in items">
                                         <div :id="'id' + '-' + idx">{{ item }}</div>
                                 </template>
 

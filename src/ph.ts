@@ -1,4 +1,3 @@
-import { PhSlot } from '@elements/Slot'
 import { Context, CONTEXT, PhComputed, PhMethod, PhSignal, PhConst } from '@elements/declarations/Context'
 import { PhComponent, processForElements, processTemplateSyntax } from '@elements/declarations/Component'
 import { PhIf } from '@elements/control-flow/If'
@@ -6,11 +5,12 @@ import { PhShow } from '@elements/control-flow/Show'
 import { PhEither } from '@elements/control-flow/Either'
 import { PhFor } from '@elements/control-flow/For'
 import { PhDynamic } from '@elements/Dynamic'
+import { PhSlot } from '@elements/Slot'
 import { PhStore } from '@elements/declarations/Store'
 import { defineComponent, noTemplateTreeWalker } from '@utils/Utils'
 import { renameShortcutAttributes, processAttributesForChildrenElements } from '@utils/Attributes'
 
-const init = () => {
+const init = async () => {
         console.group('ph init')
 
         !document[CONTEXT] &&
@@ -23,6 +23,7 @@ const init = () => {
         defineComponent('ph-computed', PhComputed)
         defineComponent('ph-const', PhConst)
         defineComponent('ph-method', PhMethod)
+        defineComponent('ph-store', PhStore)
         defineComponent('ph-for', PhFor)
         defineComponent('ph-either', PhEither)
         defineComponent('ph-show', PhShow)
@@ -30,7 +31,6 @@ const init = () => {
         defineComponent('ph-slot', PhSlot)
         defineComponent('ph-dynamic', PhDynamic)
         defineComponent('ph-component', PhComponent)
-        defineComponent('ph-store', PhStore)
 
         const tw = noTemplateTreeWalker(document.body)
         while (tw.nextNode()) {
@@ -45,10 +45,6 @@ const init = () => {
 }
 
 window.init = init
-
-document.addEventListener('DOMContentLoaded', () => {
-        init()
-})
 
 declare global {
         interface Document {

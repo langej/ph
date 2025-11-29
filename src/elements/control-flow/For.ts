@@ -34,6 +34,9 @@ const createElement = (content: HTMLElement, listname: string, itemName: string,
                 if (currentNode.hasAttribute('value') && (tagName === 'PH-IF' || tagName === 'PH-EITHER' || tagName === 'PH-SHOW' || tagName === 'PH-SLOT')) {
                         currentNode.setAttribute('value', replaceItemName(` ${currentNode.getAttribute('value')} `))
                 }
+                if (tagName === 'PH-DYNAMIC' && currentNode.hasAttribute('is')) {
+                        currentNode.setAttribute('is', replaceItemName(` ${currentNode.getAttribute('is')} `))
+                }
         }
         return el
 }
@@ -43,7 +46,7 @@ export class PhFor extends Base {
                 this.style.display = 'contents'
                 const templateElement = this.firstElementChild
                 if (templateElement?.tagName === 'TEMPLATE') {
-                        templateElement.setAttribute('each', this.getAttribute('each'))
+                        templateElement.setAttribute('ph:each', this.getAttribute('ph:each'))
                         PhFor.fromTemplate(templateElement as HTMLTemplateElement)
                 } else {
                         throw Error('no template element provided')
@@ -57,7 +60,7 @@ export class PhFor extends Base {
                 template.after(document.createComment('ph-for end'))
 
                 const //
-                        eachAttribute = template.getAttribute('each'),
+                        eachAttribute = template.getAttribute('ph:each'),
                         beginComment = template.previousSibling,
                         endComment = template.nextSibling,
                         root = template.getRootNode() as ShadowRoot,
@@ -77,11 +80,12 @@ export class PhFor extends Base {
                                                 computed.value.slice(startingIndex).forEach((_item, index) => {
                                                         const //
                                                                 content = template.content.firstElementChild.cloneNode(true) as HTMLElement,
-                                                                created = createElement(content, collection, itemName, index + startingIndex, indexName),
-                                                                disposes = processAttributesForChildrenElements(created, context)
-                                                        disposes.push(...processAttributes(created, context))
-                                                        created.disposes = disposes
+                                                                created = createElement(content, collection, itemName, index + startingIndex, indexName)
                                                         endComment.before(created)
+                                                        created.disposes = [
+                                                                ...processAttributesForChildrenElements(created, context),
+                                                                ...processAttributes(created, context),
+                                                        ]
                                                 })
                                         } else {
                                                 // remove elements

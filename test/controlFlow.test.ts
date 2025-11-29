@@ -4,8 +4,8 @@ import { createContent } from './utils'
 test('test ph-if element', async ({ page }) => {
         await page.setContent(
                 createContent(/*html*/ `
-                <ph-component>
-                        <template tag="test-div">
+                <ph-component tag="test-div">
+                        <template>
                                 <ph-signal name="flag" value="false"></ph-signal>
 
                                 <ph-if value="flag">
@@ -37,8 +37,8 @@ test('test ph-if element', async ({ page }) => {
 test('test ph-show element', async ({ page }) => {
         await page.setContent(
                 createContent(/*html*/ `
-                <ph-component>
-                        <template tag="test-div">
+                <ph-component tag="test-div">
+                        <template>
                                 <ph-signal name="flag" value="false"></ph-signal>
 
                                 <ph-show value="flag">
@@ -71,8 +71,8 @@ test('test ph-show element', async ({ page }) => {
 test('test ph-either element', async ({ page }) => {
         await page.setContent(
                 createContent(/*html*/ `
-                <ph-component>
-                        <template tag="test-div">
+                <ph-component tag="test-div">
+                        <template>
                                 <ph-signal name="count" value="2"></ph-signal>
 
                                 <ph-either value="count % 2 === 0">

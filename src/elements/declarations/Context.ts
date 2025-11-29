@@ -13,22 +13,10 @@ const //
         },
         getAttributes = (element: Base) => {
                 const //
-                        context = element.getHost()?.[CONTEXT],
+                        context = element.getHost()?.[CONTEXT] ?? document[CONTEXT],
                         name = element.getAttribute('name'),
                         value = element.getAttribute('value')
                 return { context, name, value }
-        },
-        handleLocalStorage = (localStoragePrefix: string, name: string, context: Context) => {
-                if (localStoragePrefix !== null) {
-                        const //
-                                prefix = !!localStoragePrefix ? localStoragePrefix + '/' : '',
-                                key = prefix + name,
-                                localStorageValue = localStorage.getItem(key)
-                        if (localStorageValue) context[name] = JSON.parse(localStorageValue)
-                        effect(() => {
-                                localStorage.setItem(key, JSON.stringify(context[name]))
-                        })
-                }
         }
 
 export const //
@@ -36,19 +24,27 @@ export const //
         ADD_SIGNAL = Symbol(),
         ADD_COMPUTED = Symbol(),
         ADD_METHOD = Symbol(),
-        ADD_CONST = Symbol()
+        ADD_CONST = Symbol(),
+        ADD_SLOT = Symbol()
 
 export class Context {
-        static from(parentContext: Context | undefined) {
-                if (parentContext instanceof Context) {
-                        const context = Object.create(parentContext) as Context
-                        Object.defineProperty(context, 'slots', { value: { default: signal([]) } })
-                        return context
-                }
-                return new Context()
+        slots: Record<string, Element[]> = {}
+
+        constructor() {
+                this[ADD_SLOT]('default')
         }
 
-        slots: Record<string, Signal<Element[]>> = { default: signal([]) };
+        [ADD_SLOT](name: string) {
+                const s = signal<Element[]>([])
+                Object.defineProperty(this.slots, name, {
+                        get() {
+                                return s.value
+                        },
+                        set(v) {
+                                s.value = v
+                        },
+                })
+        }
 
         [ADD_SIGNAL]<T>(name: string, s: ReturnType<typeof signal<T>>) {
                 Object.defineProperty(this, name, {
@@ -75,20 +71,33 @@ export class Context {
                 })
         }
 
-        [ADD_CONST]<T>(name: string, v: T) {
+        [ADD_CONST]<T>(name: string | symbol, v: T) {
                 Object.defineProperty(this, name, { value: v, writable: false })
         }
 }
 
 export class PhSignal extends Base {
+        #handleLocalStorage(localStorageAttribute: string, name: string, context: Context) {
+                if (localStorageAttribute !== null) {
+                        const //
+                                localStoragePrefix = !!localStorageAttribute ? localStorageAttribute + '/' : '',
+                                key = localStoragePrefix + name,
+                                localStorageValue = localStorage.getItem(key)
+                        if (localStorageValue) context[name] = JSON.parse(localStorageValue)
+                        effect(() => {
+                                localStorage.setItem(key, JSON.stringify(context[name]))
+                        })
+                }
+        }
+
         mount() {
                 const { name, value, context } = getAttributes(this)
                 if (name && value && context) {
                         const //
                                 typedValue = getTypedValue({ value, context }),
-                                localStoragePrefix = this.getAttribute('local-storage')
+                                localStorageAttribute = this.getAttribute('local-storage')
                         context[ADD_SIGNAL](name, signal(typedValue))
-                        handleLocalStorage(localStoragePrefix, name, context)
+                        this.#handleLocalStorage(localStorageAttribute, name, context)
                 }
                 this.remove()
         }
@@ -119,12 +128,13 @@ export class PhConst extends Base {
 export class PhMethod extends Base {
         mount() {
                 this.style.display = 'none'
+
                 const //
                         { context, name } = getAttributes(this),
-                        scriptElement = this.firstElementChild,
-                        body = scriptElement?.textContent.replace(/&gt;/g, '>').replace(/&lt;/g, '<').trim() ?? '',
+                        scriptElement = this.querySelector('script'),
+                        body = scriptElement?.textContent.trim() ?? '',
                         args = scriptElement
-                                .getAttribute('args')
+                                ?.getAttribute('args')
                                 ?.split(',')
                                 ?.map((arg) => {
                                         const [argName, argType] = arg.split(':').map((a) => a.trim())

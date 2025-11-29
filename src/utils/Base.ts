@@ -1,8 +1,10 @@
 export class Base extends HTMLElement {
-        log(...what) {
+        #disposes?: (() => void)[] = []
+
+        log(...content) {
                 const id = this.id ? ` #${this.id}` : ''
                 const name = this.getAttribute('name') ? ` :${this.getAttribute('name')}` : ''
-                console.log(`[${this.tagName}${name}${id}]`, ...what)
+                console.log(`[${this.tagName}${name}${id}]`, ...content)
         }
 
         mount() {}
@@ -14,6 +16,8 @@ export class Base extends HTMLElement {
 
         disconnectedCallback() {
                 this.unmount()
+                this.#disposes?.forEach((d) => d())
+                this.#disposes = []
         }
 
         on(event: string, cb: (ev: Event | CustomEvent) => void) {
@@ -27,7 +31,11 @@ export class Base extends HTMLElement {
         }
 
         emit<T>(event: string, detail?: T) {
-                const ev = !detail ? new Event(event) : new CustomEvent(event, { detail })
+                const ev = !detail ? new Event(event, { composed: true }) : new CustomEvent(event, { detail, composed: true })
                 this.dispatchEvent(ev)
+        }
+
+        defer(fn) {
+                this.#disposes.push(fn)
         }
 }

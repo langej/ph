@@ -8,6 +8,7 @@ const //
 
 export const //
         defineComponent = (tag, spec) => !customElements.get(tag) && customElements.define(tag, spec),
+        toCamelCase = (name: string): string => name.replace(/-[a-z]/g, (m: string) => m[1].toUpperCase()),
         phSlotSyntax = (input: string, replaceContent?: (x: string) => string) => {
                 return replaceHandlebars(input, (m: string) => {
                         let content = m.replace(/[{}]/g, ' ')

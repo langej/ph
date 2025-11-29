@@ -1,37 +1,54 @@
 import { Base } from '@utils/Base'
 import { createContextMethod } from '@utils/Utils'
-import { Context, CONTEXT } from './Context'
+import { ADD_CONST, ADD_SIGNAL, Context, CONTEXT } from './Context'
+import { effect, signal } from '@preact/signals-core'
+import { processImports } from './Component'
+
+export const //
+        READY = Symbol('ready')
 
 export class PhStore extends Base {
-        #context: Context
-
-        get context() {
+        #shadowroot = this.attachShadow({ mode: 'open' })
+        #context = new Context()
+        get [CONTEXT]() {
                 return this.#context
         }
 
-        mount() {
-                this.style.display = 'none'
-                const root = this.attachShadow({ mode: 'open' })
+        async mount() {
+                this.#context[ADD_CONST](
+                        READY,
+                        new Promise(async (resolve) => {
+                                this.style.display = 'none'
+                                const //
+                                        name = this.getAttribute('name'),
+                                        template = this.querySelector('template'),
+                                        // @ts-ignore
+                                        clonedTemplate = template.cloneNode(true).content as DocumentFragment,
+                                        watcher = []
 
-                const documentContext = document[CONTEXT]
-                this.#context = new Context()
-                const name = this.getAttribute('name')
+                                // @ts-ignore
+                                document[CONTEXT][`$${name}`] = this[CONTEXT]
 
-                let mountFn: () => void
-                const template = this.querySelector('template')
-                for (const script of template.content.querySelectorAll('script')) {
-                        script.setAttribute('type', 'javascript/blocked')
-                        if (script.hasAttribute('on-mount')) {
-                                mountFn = createContextMethod(this.#context, script.textContent)
-                        }
-                }
-                root.append((template.cloneNode(true) as HTMLTemplateElement).content)
+                                let initFn: () => void | Promise<void>
+                                for (const script of clonedTemplate.querySelectorAll('script')) {
+                                        script.setAttribute('type', 'javascript/blocked')
+                                        if (script.hasAttribute('init')) initFn = createContextMethod(this[CONTEXT], script.textContent)
+                                        if (script.hasAttribute('watch')) watcher.push(createContextMethod(this[CONTEXT], script.textContent))
+                                        if (script.parentElement?.tagName !== 'PH-METHOD') script.remove()
+                                }
 
-                // @ts-ignore
-                if (!documentContext.$store) documentContext.$store = {}
-                // @ts-ignore
-                documentContext.$store[name] = this.#context
+                                this.#shadowroot.append(clonedTemplate)
+                                await processImports(clonedTemplate, this[CONTEXT])
 
-                mountFn?.()
+                                await initFn?.()
+                                Object.seal(this[CONTEXT])
+                                for (const fn of watcher) {
+                                        effect(() => {
+                                                fn()
+                                        })
+                                }
+                                resolve(true)
+                        }),
+                )
         }
 }

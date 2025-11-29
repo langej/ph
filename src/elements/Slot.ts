@@ -9,7 +9,7 @@ export class PhSlot extends Base {
                 setTimeout(() => {
                         this.style.display = 'contents'
                         const value = this.getAttribute('value')
-                        const context = this.getHost()?.[CONTEXT]
+                        const context = this.getHost()?.[CONTEXT] ?? document[CONTEXT]
 
                         if (value && context) {
                                 const computed = createContextComputed(context, value)

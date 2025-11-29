@@ -5,8 +5,8 @@ test('test ph-signal', async ({ page }) => {
         let count = 42
         await page.setContent(
                 createContent(/*html*/ `
-                <ph-component>
-                        <template tag="test-div">
+                <ph-component tag="test-div">
+                        <template>
                                 <ph-signal name="count" value="0"></ph-signal>
                                 <div id="count">{{ count }}</div>
                                 <script on-mount>
@@ -30,8 +30,8 @@ test('test ph-computed', async ({ page }) => {
         let count = 42
         await page.setContent(
                 createContent(/*html*/ `
-                <ph-component>
-                        <template tag="test-div">
+                <ph-component tag="test-div">
+                        <template>
                                 <ph-signal name="count" value="0"></ph-signal>
                                 <ph-computed name="doubled" value="count * 2"></ph-computed>
                                 <div id="count">{{ count }}</div>
@@ -59,8 +59,8 @@ test('test local storage persistence', async ({ page }) => {
         await page.goto('http://localhost:3111')
         await page.setContent(
                 createContent(/*html*/ `
-                <ph-component>
-                        <template tag="test-div">
+                <ph-component tag="test-div">
+                        <template>
                                 <ph-signal name="username" value="'John Doe'" local-storage></ph-signal>
                                 <ph-signal name="count" value="0" local-storage="test"></ph-signal>
                                 <div id="count">{{ count }}</div>
