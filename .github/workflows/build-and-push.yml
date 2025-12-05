@@ -22,18 +22,12 @@ jobs:
             - name: Build project
               run: bun run build
 
-            - name: Check for changes in dist/
-              id: changes
-              run: |
-                  git diff --exit-code dist/ || echo "Changes detected in dist/"
-
-            - name: Push /dist to main (optional)
-              if: steps.changes.outputs.changed == 'true'
+            - name: Commit and push dist to main
               run: |
                   git config user.name "github-actions[bot]"
                   git config user.email "github-actions[bot]@users.noreply.github.com"
                   git add dist
-                  git commit -m "Update dist after PR merge"
+                  git commit -m "Update dist after PR merge" || echo "No changes to commit"
                   git push
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
