@@ -1,23 +1,23 @@
 {
-        "name": "@bytethedust/ph",
-        "main": "src/index.ts",
-        "version": "0.0.1",
-        "license": "MIT",
-        "devDependencies": {
-                "@types/bun": "latest",
-                "prettier": "^3.5.3",
-                "@playwright/test": "^1.57.0"
-        },
-        "dependencies": {
-                "@preact/signals-core": "^1.8.0"
-        },
-        "scripts": {
-                "build": "bun build src/ph.ts --outdir ./dist",
-                "test": "bun run build && bunx playwright test",
-                "test:ui": "bun run test --ui",
-                "format": "prettier --write ./src/**/*.ts",
-                "test-server": "bunx http-server -p 3111"
-        },
-        "browser": "dist/ph.js",
-        "type": "module"
+    "name": "@bytethedust/ph",
+    "main": "src/index.ts",
+    "version": "0.1.0",
+    "license": "MIT",
+    "devDependencies": {
+        "@types/bun": "latest",
+        "prettier": "^3.5.3",
+        "@playwright/test": "^1.57.0"
+    },
+    "dependencies": {
+        "@preact/signals-core": "^1.8.0"
+    },
+    "scripts": {
+        "build": "bun build src/ph.ts --outdir ./dist",
+        "test": "bun run build && bunx playwright test",
+        "test:ui": "bun run test --ui",
+        "format": "prettier --write ./src/**/*.ts",
+        "test-server": "bunx http-server -p 3111"
+    },
+    "browser": "dist/ph.js",
+    "type": "module"
 }

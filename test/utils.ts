@@ -8,15 +8,13 @@ const __dirname = dirname(__filename)
 const phScript = readFileSync(join(__dirname, '../dist/ph.js'), 'utf-8')
 
 export const createContent = (content: string) => /* html */ `
-<body>
-        <script>${phScript}</script>
-        ${content}
-        <script>window.init()</script>
-</body>
+<script>${phScript}</script>
+${content}
+<script>window.ph()</script>
 `
 
 export const debug = (page: Page) => {
-        page.on('console', (msg) => {
-                // console.debug(`[PH DEBUG] ${msg.type()}: ${msg.text()}`)
-        })
+    page.on('console', (msg) => {
+        // console.debug(`[PH DEBUG] ${msg.type()}: ${msg.text()}`)
+    })
 }

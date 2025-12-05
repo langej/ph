@@ -4,17 +4,17 @@ import { CONTEXT } from './declarations/Context'
 import { createContextComputed } from '@utils/Utils'
 
 export class PhDynamic extends Base {
-        mount() {
-                const //
-                        is = this.getAttribute('is'),
-                        context = this.getHost()?.[CONTEXT] ?? document[CONTEXT],
-                        computed = createContextComputed<Node>(context, is)
-                if (is && context) {
-                        effect(() => {
-                                setTimeout(() => {
-                                        this.replaceWith(computed.value)
-                                })
-                        })
-                }
+    mount() {
+        const //
+            is = this.getAttribute('is'),
+            context = this.getHost()?.[CONTEXT] ?? document[CONTEXT],
+            computed = createContextComputed<Node>(context, is)
+        if (is && context) {
+            effect(() => {
+                setTimeout(() => {
+                    this.replaceWith(computed.value)
+                })
+            })
         }
+    }
 }
