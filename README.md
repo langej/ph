@@ -207,6 +207,20 @@ Slots just work as in [standard web components](https://developer.mozilla.org/en
 </slot-example>
 ```
 
+### refs
+
+You can reference elements inside your component using the `*ref` attribute.
+
+```html
+<ph-component tag="ref-example">
+    <template>
+        <input type="text" *ref="inputElement" />
+        <button @click="alert(inputElement.value)">Show value</button>
+    </template>
+</ph-component>
+<ref-example></ref-example>
+```
+
 ### Lifecycle hooks and watchers
 
 ```html
@@ -235,7 +249,7 @@ Slots just work as in [standard web components](https://developer.mozilla.org/en
 <lifecycle-example></lifecycle-example>
 ```
 
-### Store
+## Store
 
 You can use the <ph-store> component to declare a store that can be used in multiple components.
 
