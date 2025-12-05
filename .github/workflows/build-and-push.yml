@@ -22,12 +22,22 @@ jobs:
             - name: Build project
               run: bun run build
 
-            - name: Commit and push dist to main
-              run: |
-                  git config user.name "github-actions[bot]"
-                  git config user.email "github-actions[bot]@users.noreply.github.com"
-                  git add dist
-                  git commit -m "Update dist after PR merge" || echo "No changes to commit"
-                  git push
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Create Pull Request for dist update
+              id: create_pr
+              uses: peter-evans/create-pull-request@v5
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  commit-message: 'Update dist after PR merge'
+                  branch: dist-update-after-pr
+                  title: 'Update dist after PR merge'
+                  body: 'Automatic update of the dist directory after PR merge.'
+                  base: main
+                  add-paths: dist
+                  delete-branch: true
+
+            - name: Enable PR automerge
+              uses: peter-evans/enable-pull-request-automerge@v3
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  pull-request-number: ${{ steps.create_pr.outputs.pull-request-number }}
+                  merge-method: squash
