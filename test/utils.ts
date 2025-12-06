@@ -9,8 +9,8 @@ const phScript = readFileSync(join(__dirname, '../dist/ph.js'), 'utf-8')
 
 export const createContent = (content: string) => /* html */ `
 <script>${phScript}</script>
+<script type="module">ph.init()</script>
 ${content}
-<script>window.ph()</script>
 `
 
 export const debug = (page: Page) => {
