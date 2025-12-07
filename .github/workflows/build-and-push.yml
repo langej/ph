@@ -22,7 +22,17 @@ jobs:
             - name: Build project
               run: bun run build
 
+            - name: Check for changes in dist
+              id: check_changes
+              run: |
+                  if git diff --quiet dist/; then
+                    echo "changes=false" >> $GITHUB_OUTPUT
+                  else
+                    echo "changes=true" >> $GITHUB_OUTPUT
+                  fi
+
             - name: Create Pull Request for dist update
+              if: steps.check_changes.outputs.changes == 'true'
               id: create_pr
               uses: peter-evans/create-pull-request@v5
               with:
@@ -36,6 +46,7 @@ jobs:
                   delete-branch: true
 
             - name: Enable PR automerge
+              if: steps.check_changes.outputs.changes == 'true'
               uses: peter-evans/enable-pull-request-automerge@v3
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
