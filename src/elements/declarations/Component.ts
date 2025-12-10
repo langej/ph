@@ -8,16 +8,18 @@ import { READY } from './Store'
 
 const //
     processSlots = (root: ShadowRoot, context: Context) => {
-        const //
-            slots = root.querySelectorAll('slot').values(),
-            defaultSlot = slots.find((it) => !it.hasAttribute('name')),
-            namedSlots = Array.from(slots.filter((it) => it.hasAttribute('name')))
+        let defaultSlot: HTMLSlotElement | undefined = undefined,
+            namedSlots: HTMLSlotElement[] = []
+        root.querySelectorAll('slot').forEach((s) => {
+            if (s.hasAttribute('name')) namedSlots.push(s)
+            else defaultSlot ??= s
+        })
         for (const slot of namedSlots) {
             const name = slot.getAttribute('name')
             context[ADD_SLOT](name)
         }
         root.onslotchange = () => {
-            context.slots.default = defaultSlot?.assignedElements()
+            context.slots.default = defaultSlot?.assignedElements() ?? []
             for (const slot of namedSlots) {
                 const name = slot.getAttribute('name')
                 if (context.slots) context.slots[name] = slot.assignedElements()
