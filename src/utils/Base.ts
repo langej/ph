@@ -35,7 +35,7 @@ export class Base extends HTMLElement {
         this.dispatchEvent(ev)
     }
 
-    defer(fn) {
+    onRemove(fn) {
         this.#disposes.push(fn)
     }
 }
