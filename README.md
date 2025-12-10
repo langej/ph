@@ -34,6 +34,9 @@ Alternatively, you can import the `ph.esm.js` file directly in your module:
 
 ## Component declaration
 
+Components are declared using the `<ph-component>` tag with a required `tag` attribute specifying the custom element name.
+The content of the component needs to be defined in a `<template>` tag.
+
 ```html
 <ph-component tag="your-component">
     <template>
@@ -73,7 +76,8 @@ Declared attributes will be added to the observed attributes of the component, s
 
 Signals, computed properties, constants and methods can be declared using the respective `<ph-signal>`, `<ph-computed>`, `<ph-const>` and `<ph-method>` components.
 
-For Methods you can define parameters with the `args` attribute. You can also use type hints like `String`, `Number`, `Boolean`, `Array` and `Object` but these are for readability only, yet.
+Methods are defined using a `<script>` tag inside the `<ph-method>` component.
+With the `args` attribute you can define a comma-separated list of parameters. Optionally you can also use type hints after a `:` but these are for readability only, yet.
 
 ```html
 <ph-component tag="example-calculator">
@@ -105,6 +109,18 @@ For Methods you can define parameters with the `args` attribute. You can also us
 <example-counter></example-counter>
 ```
 
+#### Automatic local-storage persistence
+
+Signals can be automatically persisted to local-storage by adding the `local-storage` attribute to the `<ph-signal>` tag.
+The value of the attribute will be used as a prefix for the local-storage key. If no value is provided, the key will be the signal name.
+
+```html
+<!-- this will persist the signal value under the key "count" in local storage -->
+<ph-signal name="count" value="0" local-storage></ph-signal>
+<!-- this will persist the signal value under the key "example/count" in local storage -->
+<ph-signal name="count" value="0" local-storage="example"></ph-signal>
+```
+
 ### Event handling
 
 Events can be handled using the `@event` syntax. The event object is available as `$e`.
@@ -118,6 +134,23 @@ Events can be handled using the `@event` syntax. The event object is available a
 </ph-component>
 
 <example-events></example-events>
+```
+
+#### Emitting events
+
+Events can be emitted using the `self.emit` method. The first argument is the event name, the second argument is an optional payload.
+If a payload is provided, it will be available as the `detail` property of the event object. See [CustomEvent](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent)
+
+```html
+<ph-component tag="example-emitter">
+    <template>
+        <button @click="self.emit('clicked')">Listen for event</button>
+        <button @click="self.emit('custom-event', { detail: 'some data' })">Emit event</button>
+    </template>
+</ph-component>
+
+<!-- event payloads are available as $e.detail -->
+<example-emitter @clicked="alert('button clicked event received')" @custom-event="alert('custom-event received with detail: ' + $e.detail)"></example-emitter>
 ```
 
 ### Binding attributes
@@ -221,7 +254,37 @@ Slots just work as in [standard web components](https://developer.mozilla.org/en
 </slot-example>
 ```
 
-### refs
+You can also access the assigned elements of slots using the `slots` object inside your component scripts. Unnamed slots are available as `slots.default`, named slots as `slots.<slot-name>`.
+
+```html
+<ph-component tag="slot-example">
+    <template>
+        <header><slot name="header"></slot></header>
+        <slot *show="false"></slot>
+        <table>
+            <template *each="s, idx in slots.default">
+                <tr>
+                    <td>{{ idx }}</td>
+                    <td>{{ s.dataset.foo }}</td>
+                    <td>{{ s.dataset.name }}</td>
+                </tr>
+            </template>
+        </table>
+        <script on-mount>
+            console.log(slots.default, slots.header)
+        </script>
+    </template>
+</ph-component>
+
+<slot-example>
+    <h1 slot="header">Title</h1>
+    <div data-foo="1" data-name="foo"></div>
+    <div data-foo="2" data-name="bar"></div>
+    <div data-foo="3" data-name="baz"></div>
+</slot-example>
+```
+
+### Refs
 
 You can reference elements inside your component using the `*ref` attribute.
 
@@ -247,6 +310,9 @@ You can reference elements inside your component using the `*ref` attribute.
         <!-- runs once when the component is added to the DOM -->
         <script on-mount>
             console.log('Component mounted')
+            self.onRemove(() => {
+                console.log('This will run when the component will be removed')
+            })
         </script>
 
         <!-- runs if the component is removed from the DOM -->

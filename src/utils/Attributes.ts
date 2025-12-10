@@ -24,8 +24,9 @@ export const //
         }
     },
     processAttributesForChildrenElements = (root: Document | HTMLElement | ShadowRoot, context: Context) => {
-        const disposes = []
-        const tw = noTemplateTreeWalker(root)
+        const //
+            disposes = [],
+            tw = noTemplateTreeWalker(root)
         while (tw.nextNode()) {
             const element = tw.currentNode as Element
             disposes.push(...processAttributes(element, context))
@@ -34,8 +35,9 @@ export const //
     },
     renameShortcutAttributes = (element: Element) => {
         for (const attributeName of element.getAttributeNames()) {
-            const name = attributeName
-            const replacedAttributeName = AttributeMapping[name[0]]?.(name)
+            const //
+                name = attributeName,
+                replacedAttributeName = AttributeMapping[name[0]]?.(name)
             if (replacedAttributeName) {
                 element.setAttribute(replacedAttributeName, element.getAttribute(name))
                 element.removeAttribute(name)
@@ -43,18 +45,20 @@ export const //
         }
     },
     processAttributes = (element: Element, context: Context) => {
-        const disposes: ReturnType<typeof effect>[] = []
-        const attributeNames = element.getAttributeNames()
+        const //
+            disposes: ReturnType<typeof effect>[] = [],
+            attributeNames = element.getAttributeNames()
         for (const attributeName of attributeNames) {
-            const attributeValue = element.getAttribute(attributeName)
-            // attaching events
-            const attributeExists = attributeValue && attributeValue !== ''
+            const //
+                attributeValue = element.getAttribute(attributeName),
+                attributeExists = attributeValue && attributeValue !== ''
 
             if (attributeExists) {
                 // binding events
                 if (attributeName.startsWith(Directives['on:'])) {
-                    const eventName = attributeName.replace(Directives['on:'], '')
-                    const eventListener = createContextMethod(context, attributeValue, '$e')
+                    const //
+                        eventName = attributeName.replace(Directives['on:'], ''),
+                        eventListener = createContextMethod(context, attributeValue, '$e')
                     setTimeout(() => {
                         element.addEventListener(eventName, eventListener)
                     })
@@ -63,8 +67,9 @@ export const //
 
                 // binding properties
                 if (attributeName.startsWith(Directives['bind:'])) {
-                    const computed = createContextComputed(context, attributeValue)
-                    const name = attributeName.replace(Directives['bind:'], '')
+                    const //
+                        computed = createContextComputed(context, attributeValue),
+                        name = attributeName.replace(Directives['bind:'], '')
                     disposes.push(
                         effect(() => {
                             if (computed.value !== undefined && computed.value !== null) element.setAttribute(name, computed.value as string)
@@ -76,8 +81,9 @@ export const //
 
                 // set object as property
                 if (attributeName.startsWith(Directives['prop:'])) {
-                    const name = toCamelCase(attributeName.replace(Directives['prop:'], ''))
-                    const computed = createContextComputed(context, attributeValue)
+                    const //
+                        name = toCamelCase(attributeName.replace(Directives['prop:'], '')),
+                        computed = createContextComputed(context, attributeValue)
                     disposes.push(
                         effect(() => {
                             const target = element[CONTEXT] ?? element
@@ -89,8 +95,9 @@ export const //
 
                 // binding of bool attributes
                 if (attributeName.startsWith(Directives['bool:'])) {
-                    const name = attributeName.replace(Directives['bool:'], '')
-                    const computed = createContextComputed(context, attributeValue)
+                    const //
+                        name = attributeName.replace(Directives['bool:'], ''),
+                        computed = createContextComputed(context, attributeValue)
                     disposes.push(
                         effect(() => {
                             if (computed.value) element.toggleAttribute(name, true)
