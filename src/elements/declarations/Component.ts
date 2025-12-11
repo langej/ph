@@ -166,6 +166,8 @@ const //
                     this[CONTEXT][ADD_CONST](s, document[CONTEXT][`$${s}`])
                 })
 
+                await processImports(clonedTemplate, this[CONTEXT])
+
                 // mount template to element
                 const root = this.#shadowRoot
                 root.append(clonedTemplate)
@@ -174,9 +176,6 @@ const //
 
                 // process <template *each="...">
                 processForElements(root)
-
-                // process imports
-                await processImports(root, this[CONTEXT])
 
                 // run on mount function if exists
                 await onMountFunction?.()
@@ -226,9 +225,10 @@ export const //
         await Promise.all(
             Array.from(element.querySelectorAll('import[src]')).map(async (lib) => {
                 const //
-                    src = lib.getAttribute('src'),
-                    srcURL = src.includes(location.protocol) && !(src.startsWith('/') || src.startsWith('./')) ? src : `${location.origin}/${src}`,
+                    src = new URL(lib.getAttribute('src')),
+                    srcURL = src.origin !== location.origin ? src.toString() : `${location.origin}/${src.toString()}`,
                     imported = await import(srcURL)
+                lib.removeAttribute('src')
                 for (const name of lib.getAttributeNames()) {
                     const asName = lib.getAttribute(name) ?? name
                     const part = imported[toCamelCase(name)]
@@ -272,5 +272,7 @@ export class PhComponent extends Base {
                     ?.map((s) => s.trim()) ?? []
         if (template?.tagName === 'TEMPLATE') constructCustomElement(tag, { template, attributes, properties, inline, closedShadowRoot, stores })
         else throw Error('no template element provided')
+
+        this.remove()
     }
 }
