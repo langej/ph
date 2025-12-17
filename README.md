@@ -459,11 +459,11 @@ Imports can also be used in Stores.
 <import-example></import-example>
 ```
 
-| Import Statement                                             | `<import>` Element                                                              |
-| ------------------------------------------------------------ | ------------------------------------------------------------------------------- |
-| `import DefaultExport from 'url'`                            | `<import src="url" import="DefaultExport"></import>`                            |
-| `import * as Name from 'url'`                                | `<import src="url" import="* as Name"></import>`                                |
-| `import { Export1, Export2 } from 'url'`                     | `<import src="url" import="{ Export1, Export2 }"></import>`                     |
-| `import DefaultExport, { Export1, Export2 } from 'url'`      | `<import src="url" import="DefaultExport, { Export1, Export2 }"></import>`      |
-| `import DefaultExport, * as Name from 'url'`                 | `<import src="url" import="DefaultExport, * as Name"></import>`                 |
-| `import { Export1 as Alias1, Export2 as Alias2 } from 'url'` | `<import src="url" import="{ Export1 as Alias1, Export2 as Alias2 }"></import>` |
+| Import Statement                                                             | `<import>` Element                                                                              |
+| ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `import DefaultExport from 'url'`                                            | `<import src="url" import="DefaultExport"></import>`                                            |
+| `import * as Name from 'url'`                                                | `<import src="url" import="* as Name"></import>`                                                |
+| `import { Export1, Export2 } from 'url'`                                     | `<import src="url" import="{ Export1, Export2 }"></import>`                                     |
+| `import DefaultExport, { Export1, Export2 } from 'url'`                      | `<import src="url" import="DefaultExport, { Export1, Export2 }"></import>`                      |
+| `import DefaultExport, * as Name from 'url'`                                 | `<import src="url" import="DefaultExport, * as Name"></import>`                                 |
+| `import DefaultExport, * as Name, { Export1, Export2 as Alias2 } from 'url'` | `<import src="url" import="DefaultExport, * as Name, { Export1, Export2 as Alias2 }"></import>` |
