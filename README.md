@@ -2,8 +2,28 @@
 
 - plain html powered by web components
 - no build step required
-- only ~5kb in size
+- only ~6kb in size
 - the browser console is your dev tool
+
+// Table of Contents
+
+- [How to use](#how-to-use)
+    - [Load from cdn](#load-from-cdn)
+    - [Component declaration](#component-declaration)
+        - [Using attributes](#using-attributes)
+        - [Using signals, computed properties, constants and methods](#using-signals-computed-properties-constants-and-methods)
+            - [Automatic local-storage persistence](#automatic-local-storage-persistence)
+        - [Event handling](#event-handling)
+            - [Event modifiers](#event-modifiers)
+            - [Emitting events](#emitting-events)
+        - [Binding attributes](#binding-attributes)
+        - [Control flow](#control-flow)
+        - [Lists](#lists)
+        - [Slots](#slots)
+        - [Refs](#refs)
+        - [Lifecycle hooks and watchers](#lifecycle-hooks-and-watchers)
+    - [Store](#store)
+    - [JS Imports](#js-imports)
 
 # How to use
 
@@ -136,6 +156,39 @@ Events can be handled using the `@event` syntax. The event object is available a
 <example-events></example-events>
 ```
 
+#### Event modifiers
+
+Event handlers can be modified using event modifiers. Multiple modifiers can be separated by a dot (`.`).
+The following modifiers are available:
+
+| Modifier        | Description                                                                   |
+| --------------- | ----------------------------------------------------------------------------- |
+| `prevent`       | Calls `event.preventDefault()`                                                |
+| `stop`          | Calls `event.stopPropagation()`                                               |
+| `ctrl`          | Only calls the event handler if the `ctrl` key is pressed                     |
+| `shift`         | Only calls the event handler if the `shift` key is pressed                    |
+| `alt`           | Only calls the event handler if the `alt` key is pressed                      |
+| `meta`          | Only calls the event handler if the `meta` key is pressed                     |
+| `escape`        | Only calls the event handler if the `escape` key is pressed (keyboard events) |
+| `enter`         | Only calls the event handler if the `enter` key is pressed (keyboard events)  |
+| `debounce:<ms>` | Debounces the event handler by the specified milliseconds                     |
+| `throttle:<ms>` | Throttles the event handler by the specified milliseconds                     |
+
+```html
+<ph-component tag="example-modifiers">
+    <template>
+        <form @submit.prevent="alert('form submitted!')">
+            <input type="text" />
+            <button type="submit">Submit</button>
+        </form>
+        <button @click.debounce:1000="alert('debounced click!')">Debounced Click</button>
+        <button @click.throttle:1000="alert('throttled click!')">Throttled Click</button>
+        <button @click.ctrl.alt.shift="alert('ctrl+alt+shift+click!')">Ctrl Click</button>
+    </template>
+</ph-component>
+<example-modifiers></example-modifiers>
+```
+
 #### Emitting events
 
 Events can be emitted using the `self.emit` method. The first argument is the event name, the second argument is an optional payload.
@@ -181,6 +234,10 @@ You can also set properties directly using the `.` syntax. In this case you need
 ```
 
 ### Control flow
+
+Control flow can be implemented using the `*if`, `*show` attributes or the `<ph-either>` component.
+
+The `<ph-either>` component takes a `value` attribute and two child elements. The first child will be rendered if the value is truthy, the second if it is falsy.
 
 ```html
 <ph-component tag="some-toggle">
@@ -377,3 +434,36 @@ To use a store inside a component, use the `use-stores` attribute on the `<templ
 <store-example></store-example>
 <store-example></store-example>
 ```
+
+## JS Imports
+
+You can import javascript modules using a `<import>` element inside of a component or store.
+With the `src` attribute you specify the module url, with the `import` attribute you specify what to import like you would in a regular JavaScript import statement.
+
+Imports can also be used in Stores.
+
+```html
+<ph-component tag="import-example">
+    <template>
+        <import src="https://esm.run/fireworks-js" import="_f, * as fworks, { Fireworks as f }"></import>
+
+        <script on-mount>
+            const fireworks = new f(container, { speed: 3, acceleration: 1.05, friction: 0.95, gravity: 1.5 })
+            fireworks.start()
+            self.onRemove(() => fireworks.stop())
+        </script>
+
+        <div *ref="container"></div>
+    </template>
+</ph-component>
+<import-example></import-example>
+```
+
+| Import Statement                                             | `<import>` Element                                                              |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| `import DefaultExport from 'url'`                            | `<import src="url" import="DefaultExport"></import>`                            |
+| `import * as Name from 'url'`                                | `<import src="url" import="* as Name"></import>`                                |
+| `import { Export1, Export2 } from 'url'`                     | `<import src="url" import="{ Export1, Export2 }"></import>`                     |
+| `import DefaultExport, { Export1, Export2 } from 'url'`      | `<import src="url" import="DefaultExport, { Export1, Export2 }"></import>`      |
+| `import DefaultExport, * as Name from 'url'`                 | `<import src="url" import="DefaultExport, * as Name"></import>`                 |
+| `import { Export1 as Alias1, Export2 as Alias2 } from 'url'` | `<import src="url" import="{ Export1 as Alias1, Export2 as Alias2 }"></import>` |
