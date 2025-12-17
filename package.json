@@ -1,6 +1,6 @@
 {
-    "name": "@bytethedust/ph",
-    "version": "0.1.0",
+    "name": "@langej/ph",
+    "version": "0.1.1",
     "type": "module",
     "browser": "dist/ph.js",
     "module": "dist/ph.esm.js",

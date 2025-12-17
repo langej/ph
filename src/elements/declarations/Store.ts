@@ -37,8 +37,12 @@ export class PhStore extends Base {
                     if (script.parentElement?.tagName !== 'PH-METHOD') script.remove()
                 }
 
+                const imports = await processImports(clonedTemplate)
+                for (const [key, value] of imports) {
+                    this[CONTEXT][ADD_CONST](key, value)
+                }
+
                 this.#shadowroot.append(clonedTemplate)
-                await processImports(clonedTemplate, this[CONTEXT])
 
                 await initFn?.()
                 Object.seal(this[CONTEXT])

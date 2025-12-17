@@ -6,6 +6,12 @@ import { processAttributesForChildrenElements, renameShortcutAttributesInTemplat
 import { ADD_CONST, ADD_SIGNAL, ADD_SLOT, CONTEXT, Context } from './Context'
 import { READY } from './Store'
 
+type ImportMap = {
+    default?: string
+    '*'?: string | undefined
+    named?: (string | [string, string])[]
+}
+
 const //
     processSlots = (root: ShadowRoot, context: Context) => {
         let defaultSlot: HTMLSlotElement | undefined = undefined,
@@ -67,12 +73,14 @@ const //
             stores?: string[]
         },
     ) => {
-        const //
-            template = spec.template,
-            observedAttributes = spec.attributes ?? [],
-            observedProperties = spec.properties ?? []
-
         if (!tag) throw Error('no tag attribute was provided')
+        if (!spec.template) throw Error('no template provided for component ' + tag)
+
+        const //
+            template = spec.template.cloneNode(true) as HTMLTemplateElement,
+            observedAttributes = spec.attributes ?? [],
+            observedProperties = spec.properties ?? [],
+            importPromises = processImports(template.content)
 
         const ComponentClass = class extends Base {
             #shadowRoot: ShadowRoot
@@ -166,6 +174,11 @@ const //
                     this[CONTEXT][ADD_CONST](s, document[CONTEXT][`$${s}`])
                 })
 
+                const allImports = await importPromises
+                for (const [key, value] of allImports) {
+                    this[CONTEXT][ADD_CONST](key, value)
+                }
+
                 // mount template to element
                 const root = this.#shadowRoot
                 root.append(clonedTemplate)
@@ -174,9 +187,6 @@ const //
 
                 // process <template *each="...">
                 processForElements(root)
-
-                // process imports
-                await processImports(root, this[CONTEXT])
 
                 // run on mount function if exists
                 await onMountFunction?.()
@@ -222,24 +232,68 @@ export const //
             element.innerHTML = phSlotSyntax(element.innerHTML)
         }
     },
-    processImports = async (element: Element | DocumentFragment, context: Context) => {
-        await Promise.all(
+    parseImportAttribute = (importAttr: string): ImportMap | undefined => {
+        if (!importAttr) return undefined
+
+        const //
+            result: ImportMap = {
+                default: undefined,
+                '*': undefined,
+                named: [],
+            },
+            // e.g. importAttr = "defaultExport, * as name, { export1 , export2 as alias2 }"
+            regular = /^(?<default>(\w+)\s*,?\s*)?(?<all>(\*\s+as\s+\w+)\s*,?\s*)?(?<named>\{[^}]+\})?$/,
+            match = importAttr.match(regular),
+            matchedGroups = match?.groups
+        if (matchedGroups) {
+            if (matchedGroups['default']) result.default = matchedGroups['default'].replace(',', '').trim()
+            if (matchedGroups['all']) result['*'] = matchedGroups['all'].replace('* as ', '').replace(',', '').trim()
+            if (matchedGroups['named']) {
+                const //
+                    namedContent = matchedGroups['named'].slice(1, -1),
+                    namedParts = namedContent.split(',').map((s) => s.trim())
+                for (const entry of namedParts) {
+                    const asMatch = entry.match(/^(\w+)\s+as\s+(\w+)$/)
+                    if (asMatch) {
+                        result.named.push([asMatch[1], asMatch[2]])
+                    } else {
+                        result.named.push(entry)
+                    }
+                }
+            }
+        }
+        return result
+    },
+    processImports = async (element: Element | DocumentFragment) => {
+        return Promise.all(
             Array.from(element.querySelectorAll('import[src]')).map(async (lib) => {
                 const //
-                    src = lib.getAttribute('src'),
-                    srcURL = src.includes(location.protocol) && !(src.startsWith('/') || src.startsWith('./')) ? src : `${location.origin}/${src}`,
-                    imported = await import(srcURL)
-                for (const name of lib.getAttributeNames()) {
-                    const asName = lib.getAttribute(name) ?? name
-                    const part = imported[toCamelCase(name)]
-                    if (part) {
-                        context[ADD_CONST](asName, part)
+                    src = new URL(lib.getAttribute('src')),
+                    srcURL = src.origin !== location.origin ? src.toString() : `${location.origin}/${src.toString()}`,
+                    importedModule = await import(srcURL),
+                    addToContext: [string, any][] = [],
+                    imports = parseImportAttribute(lib.getAttribute('import'))
+
+                if (imports) {
+                    if (imports.default) addToContext.push([imports.default, importedModule.default])
+                    if (imports['*']) addToContext.push([imports['*'], importedModule])
+                    for (const named of imports.named) {
+                        if (typeof named == 'string') {
+                            const part = importedModule[named]
+                            if (part) addToContext.push([named, part])
+                            else console.warn(`Import "${named}" not found in module ${srcURL}`)
+                        } else {
+                            const [originalName, asName] = named
+                            const part = importedModule[originalName]
+                            if (part) addToContext.push([asName, part])
+                            else console.warn(`Import "${originalName}" not found in module ${srcURL}`)
+                        }
                     }
                 }
                 lib.remove()
-                return undefined
+                return addToContext
             }),
-        )
+        ).then((allImports) => allImports.flat())
     }
 
 /**
@@ -272,5 +326,7 @@ export class PhComponent extends Base {
                     ?.map((s) => s.trim()) ?? []
         if (template?.tagName === 'TEMPLATE') constructCustomElement(tag, { template, attributes, properties, inline, closedShadowRoot, stores })
         else throw Error('no template element provided')
+
+        this.remove()
     }
 }

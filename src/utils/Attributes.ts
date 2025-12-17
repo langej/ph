@@ -1,5 +1,5 @@
 import { effect } from '@preact/signals-core'
-import { ADD_CONST, CONTEXT, type Context } from '@elements/declarations/Context'
+import { CONTEXT, type Context } from '@elements/declarations/Context'
 import { allElementsTreeWalker, createContextComputed, createContextMethod, noTemplateTreeWalker, toCamelCase } from './Utils'
 
 export const //
@@ -17,6 +17,33 @@ export const //
         ':': (name: string) => name.replace(':', Directives['bind:']),
         '*': (name: string) => name.replace('*', Directives['ph:']),
     } as const,
+    modifiers = {
+        ctrl: () => (e: KeyboardEvent) => e.ctrlKey,
+        shift: () => (e: KeyboardEvent) => e.shiftKey,
+        alt: () => (e: KeyboardEvent) => e.altKey,
+        meta: () => (e: KeyboardEvent) => e.metaKey,
+        enter: () => (e: KeyboardEvent) => e.key === 'Enter',
+        escape: () => (e: KeyboardEvent) => e.key === 'Escape',
+        throttle: (delay: number) => {
+            let lastCall = 0
+            return () => {
+                const now = Date.now()
+                if (now - lastCall >= delay) {
+                    lastCall = now
+                    return true
+                }
+            }
+        },
+        debounce: (delay: number) => {
+            let timeout: Timer
+            return (callback: () => void) => {
+                clearTimeout(timeout)
+                timeout = setTimeout(() => {
+                    callback()
+                }, delay)
+            }
+        },
+    },
     renameShortcutAttributesInTemplate = (template: DocumentFragment) => {
         const tw = allElementsTreeWalker(template)
         while (tw.nextNode()) {
@@ -57,10 +84,53 @@ export const //
                 // binding events
                 if (attributeName.startsWith(Directives['on:'])) {
                     const //
-                        eventName = attributeName.replace(Directives['on:'], ''),
+                        [eventName, ...mods] = attributeName.replace(Directives['on:'], '').split('.'),
+                        modFilters = [],
+                        eventOptions: AddEventListenerOptions = {},
                         eventListener = createContextMethod(context, attributeValue, '$e')
+
+                    let shouldPreventDefault = false,
+                        shouldStopPropagation = false,
+                        debounceFn: ReturnType<typeof modifiers.debounce> = undefined
+                    mods.forEach((mod) => {
+                        const [name, ...args] = mod.split(':')
+                        switch (name) {
+                            case 'once':
+                                eventOptions.once = true
+                                break
+                            case 'passive':
+                                eventOptions.passive = true
+                                break
+                            case 'capture':
+                                eventOptions.capture = true
+                                break
+                            case 'prevent':
+                                shouldPreventDefault = true
+                                break
+                            case 'stop':
+                                shouldStopPropagation = true
+                                break
+                            case 'debounce':
+                                debounceFn = modifiers.debounce(Number(args[0]))
+                                break
+                            default:
+                                if (modifiers[name]) modFilters.push(modifiers[name]?.(...args))
+                        }
+                    })
+
                     setTimeout(() => {
-                        element.addEventListener(eventName, eventListener)
+                        element.addEventListener(
+                            eventName,
+                            (e: Event) => {
+                                if (shouldPreventDefault) e.preventDefault()
+                                if (shouldStopPropagation) e.stopPropagation()
+                                if (modFilters.every((m) => m(e))) {
+                                    if (debounceFn) debounceFn(() => eventListener(e))
+                                    else eventListener(e)
+                                }
+                            },
+                            eventOptions,
+                        )
                     })
                     element.removeAttribute(attributeName)
                 }
