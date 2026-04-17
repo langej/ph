@@ -1,5 +1,6 @@
 import { CONTEXT, Context } from '@elements/declarations/Context'
-import { init } from './init'
+import { init } from '@/init'
+import { Dispose } from '@utils/Utils'
 
 declare global {
     interface Document {
@@ -7,7 +8,7 @@ declare global {
     }
     interface Element {
         [CONTEXT]?: Context
-        disposes?: (() => void)[]
+        disposes?: Dispose[]
     }
     interface Window {
         ph: { init: typeof init }

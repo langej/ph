@@ -1,3 +1,7 @@
-import { init } from './init'
+import { init } from '@/init'
 
-window.ph = { init }
+export { init }
+
+export default {
+    init,
+}

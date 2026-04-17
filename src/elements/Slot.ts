@@ -1,16 +1,17 @@
 import { effect } from '@preact/signals-core'
 import { Base } from '@utils/Base'
-import { createContextComputed } from '@utils/Utils'
-import { CONTEXT } from './declarations/Context'
+import { createContextComputed, delayProcessing, Dispose } from '@utils/Utils'
+import { resolveContext } from './declarations/Context'
 
 export class PhSlot extends Base {
-    #dispose?: () => void
+    #dispose?: Dispose
     mount() {
-        setTimeout(() => {
-            this.style.display = 'contents'
-            const value = this.getAttribute('value')
-            const context = this.getHost()?.[CONTEXT] ?? document[CONTEXT]
+        this.style.display = 'contents'
+        const //
+            value = this.getAttribute('value'),
+            context = resolveContext(this)
 
+        delayProcessing(() => {
             if (value && context) {
                 const computed = createContextComputed(context, value)
                 this.#dispose = effect(() => {
