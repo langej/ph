@@ -1,7 +1,9 @@
-export class Base extends HTMLElement {
-    #disposes?: (() => void)[] = []
+import { Dispose } from './Utils'
 
-    log(...content) {
+export class Base extends HTMLElement {
+    #disposes: Dispose[] = []
+
+    log(...content: any[]) {
         const id = this.id ? ` #${this.id}` : ''
         const name = this.getAttribute('name') ? ` :${this.getAttribute('name')}` : ''
         console.log(`[${this.tagName}${name}${id}]`, ...content)
@@ -21,6 +23,7 @@ export class Base extends HTMLElement {
     }
 
     on(event: string, cb: (ev: Event | CustomEvent) => void) {
+        this.#disposes?.push(() => this.removeEventListener(event, cb))
         return this.addEventListener(event, cb)
     }
 
@@ -30,12 +33,19 @@ export class Base extends HTMLElement {
         return root.host ?? root
     }
 
-    emit<T>(event: string, detail?: T) {
-        const ev = !detail ? new Event(event, { composed: true }) : new CustomEvent(event, { detail, composed: true })
+    emit<T>(event: string, detail?: T, options?: { composed?: boolean; bubbles?: boolean; cancelable?: boolean }) {
+        const ev = !detail
+            ? new Event(event, { composed: options?.composed ?? true, bubbles: options?.bubbles ?? true, cancelable: options?.cancelable ?? false })
+            : new CustomEvent(event, {
+                  detail,
+                  composed: options?.composed ?? true,
+                  bubbles: options?.bubbles ?? true,
+                  cancelable: options?.cancelable ?? false,
+              })
         this.dispatchEvent(ev)
     }
 
-    onRemove(fn) {
+    onRemove(fn: () => void) {
         this.#disposes.push(fn)
     }
 }
