@@ -1,6 +1,6 @@
 import { effect } from '@preact/signals-core'
 import { CONTEXT, type Context } from '@elements/declarations/Context'
-import { allElementsTreeWalker, createContextComputed, createContextMethod, noTemplateTreeWalker, toCamelCase } from './Utils'
+import { allElementsTreeWalker, createContextComputed, createContextMethod, delayProcessing, Dispose, noTemplateTreeWalker, toCamelCase } from './Utils'
 
 export const //
     Directives = {
@@ -35,7 +35,7 @@ export const //
             }
         },
         debounce: (delay: number) => {
-            let timeout: Timer
+            let timeout: ReturnType<typeof setTimeout>
             return (callback: () => void) => {
                 clearTimeout(timeout)
                 timeout = setTimeout(() => {
@@ -52,7 +52,7 @@ export const //
     },
     processAttributesForChildrenElements = (root: Document | HTMLElement | ShadowRoot, context: Context) => {
         const //
-            disposes = [],
+            disposes: Dispose[] = [],
             tw = noTemplateTreeWalker(root)
         while (tw.nextNode()) {
             const element = tw.currentNode as Element
@@ -64,9 +64,10 @@ export const //
         for (const attributeName of element.getAttributeNames()) {
             const //
                 name = attributeName,
-                replacedAttributeName = AttributeMapping[name[0]]?.(name)
-            if (replacedAttributeName) {
-                element.setAttribute(replacedAttributeName, element.getAttribute(name))
+                replacedAttributeName = AttributeMapping[name[0]]?.(name),
+                value = element.getAttribute(name)
+            if (replacedAttributeName && value) {
+                element.setAttribute(replacedAttributeName, value)
                 element.removeAttribute(name)
             }
         }
@@ -85,13 +86,13 @@ export const //
                 if (attributeName.startsWith(Directives['on:'])) {
                     const //
                         [eventName, ...mods] = attributeName.replace(Directives['on:'], '').split('.'),
-                        modFilters = [],
+                        modFilters: ((e: Event) => boolean)[] = [],
                         eventOptions: AddEventListenerOptions = {},
                         eventListener = createContextMethod(context, attributeValue, '$e')
 
                     let shouldPreventDefault = false,
                         shouldStopPropagation = false,
-                        debounceFn: ReturnType<typeof modifiers.debounce> = undefined
+                        debounceFn: ReturnType<typeof modifiers.debounce> | undefined
                     mods.forEach((mod) => {
                         const [name, ...args] = mod.split(':')
                         switch (name) {
@@ -118,7 +119,7 @@ export const //
                         }
                     })
 
-                    setTimeout(() => {
+                    delayProcessing(() => {
                         element.addEventListener(
                             eventName,
                             (e: Event) => {
@@ -180,11 +181,11 @@ export const //
                 if (attributeName.startsWith(Directives['ph:'])) {
                     const name = attributeName.replace(Directives['ph:'], '')
                     if (name === 'if') {
-                        const //
-                            computed = createContextComputed(context, attributeValue),
-                            comment = document.createComment('ph-if')
-                        element.before(comment)
-                        setTimeout(() => {
+                        delayProcessing(() => {
+                            const //
+                                computed = createContextComputed(context, attributeValue),
+                                comment = document.createComment('ph-if')
+                            element.before(comment)
                             disposes.push(
                                 effect(() => {
                                     if (computed.value) comment.after(element)

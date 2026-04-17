@@ -1,7 +1,7 @@
 import { Base } from '@utils/Base'
 import { createContextMethod } from '@utils/Utils'
 import { createContextComputed } from '@utils/Utils'
-import { signal, type Signal, type ReadonlySignal, effect } from '@preact/signals-core'
+import { signal, type ReadonlySignal, effect } from '@preact/signals-core'
 
 const //
     getTypedValue = ({ value, context }: { value: string; context: Context }) => {
@@ -13,7 +13,7 @@ const //
     },
     getAttributes = (element: Base) => {
         const //
-            context = element.getHost()?.[CONTEXT] ?? document[CONTEXT],
+            context = resolveContext(element),
             name = element.getAttribute('name'),
             value = element.getAttribute('value')
         return { context, name, value }
@@ -25,9 +25,20 @@ export const //
     ADD_COMPUTED = Symbol(),
     ADD_METHOD = Symbol(),
     ADD_CONST = Symbol(),
-    ADD_SLOT = Symbol()
+    ADD_SLOT = Symbol(),
+    resolveContext = (node: Node | null): Context => {
+        let current = node
+        while (current && current !== document) {
+            if ((current as any)[CONTEXT]) return (current as any)[CONTEXT]
+            if (current instanceof ShadowRoot) current = current.host
+            else current = current.parentNode
+        }
+        return document[CONTEXT]
+    }
 
 export class Context {
+    [key: string]: any
+
     slots: Record<string, Element[]> = {}
 
     constructor() {
@@ -97,7 +108,7 @@ export class PhSignal extends Base {
                 typedValue = getTypedValue({ value, context }),
                 localStorageAttribute = this.getAttribute('local-storage')
             context[ADD_SIGNAL](name, signal(typedValue))
-            this.#handleLocalStorage(localStorageAttribute, name, context)
+            if (localStorageAttribute !== null) this.#handleLocalStorage(localStorageAttribute, name, context)
         }
         this.remove()
     }
@@ -141,7 +152,7 @@ export class PhMethod extends Base {
                     return { name: argName, type: argType }
                 }),
             joined = args?.map((arg) => arg.name).join(',')
-        if (context && body) {
+        if (name && context && body) {
             const method = createContextMethod(context, body, joined)
             context[ADD_METHOD](name, method)
         } else {

@@ -1,14 +1,15 @@
-import { CONTEXT } from '@elements/declarations/Context'
+import { resolveContext } from '@elements/declarations/Context'
 import { effect } from '@preact/signals-core'
 import { Base } from '@utils/Base'
-import { createContextComputed } from '@utils/Utils'
+import { createContextComputed, Dispose } from '@utils/Utils'
 
 export class PhShow extends Base {
-    #dispose
+    #dispose?: Dispose
     mount() {
         this.style.display = 'inline flow'
-        const value = this.getAttribute('value')
-        const context = this.getHost()?.[CONTEXT]
+        const //
+            value = this.getAttribute('value'),
+            context = resolveContext(this)
         if (value && context) {
             const val = createContextComputed(context, value)
             this.#dispose = effect(() => {

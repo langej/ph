@@ -1,14 +1,14 @@
-import { signal, effect, computed } from '@preact/signals-core'
+import { signal, effect } from '@preact/signals-core'
 import { PhFor } from '@elements/control-flow/For'
 import { Base } from '@utils/Base'
-import { createContextMethod, noTemplateTreeWalker, defineComponent, phSlotSyntax, toCamelCase } from '@utils/Utils'
+import { createContextMethod, noTemplateTreeWalker, defineComponent, phSlotSyntax, toCamelCase, Dispose } from '@utils/Utils'
 import { processAttributesForChildrenElements, renameShortcutAttributesInTemplate } from '@utils/Attributes'
 import { ADD_CONST, ADD_SIGNAL, ADD_SLOT, CONTEXT, Context } from './Context'
 import { READY } from './Store'
 
 type ImportMap = {
     default?: string
-    '*'?: string | undefined
+    '*'?: string
     named?: (string | [string, string])[]
 }
 
@@ -22,25 +22,25 @@ const //
         })
         for (const slot of namedSlots) {
             const name = slot.getAttribute('name')
-            context[ADD_SLOT](name)
+            if (name) context[ADD_SLOT](name)
         }
         root.onslotchange = () => {
             context.slots.default = defaultSlot?.assignedElements() ?? []
             for (const slot of namedSlots) {
                 const name = slot.getAttribute('name')
-                if (context.slots) context.slots[name] = slot.assignedElements()
+                if (name && context.slots) context.slots[name] = slot.assignedElements()
             }
         }
     },
     processRefs = (root: DocumentFragment, context: Context) => {
         for (const element of root.querySelectorAll('[ph\\:ref]')) {
             const name = element.getAttribute('ph:ref')
-            context[ADD_CONST](name, element)
+            if (name) context[ADD_CONST](name, element)
             element.removeAttribute('ph:ref')
         }
     },
     memoizedGlobalStylesheet = (() => {
-        let cachedValue = null
+        let cachedValue: HTMLStyleElement | null = null
         return () => {
             if (cachedValue === null) {
                 cachedValue = document.querySelector('style[global]')
@@ -84,8 +84,8 @@ const //
 
         const ComponentClass = class extends Base {
             #shadowRoot: ShadowRoot
-            #disposes: any[] = []
-            #onRemoveFn: () => void
+            #disposes: Dispose[] = []
+            #onRemoveFn: () => void = () => {}
 
             #context: Context
             get [CONTEXT]() {
@@ -94,7 +94,7 @@ const //
 
             static observedAttributes = observedAttributes
 
-            attributeChangedCallback(name, oldV, newV) {
+            attributeChangedCallback(name: string, oldV: string | null, newV: string | null) {
                 const camelCased = toCamelCase(name)
                 if (this[CONTEXT] && oldV !== newV) {
                     this[CONTEXT][camelCased] = newV
@@ -105,13 +105,12 @@ const //
                 super()
                 const mode = spec.closedShadowRoot ? 'closed' : 'open'
                 this.#shadowRoot = this.attachShadow({ mode: mode })
-                // create context
-                if (!this[CONTEXT]) {
-                    this.#context = new Context()
-                    Object.setPrototypeOf(this[CONTEXT], document[CONTEXT])
-                    this[CONTEXT][ADD_CONST]('self', this)
-                    this[CONTEXT][ADD_CONST]('root', this.#shadowRoot)
-                }
+
+                this.#context ??= new Context()
+                Object.setPrototypeOf(this[CONTEXT], document[CONTEXT])
+                this[CONTEXT][ADD_CONST]('self', this)
+                this[CONTEXT][ADD_CONST]('root', this.#shadowRoot)
+
                 // set initial signals for properties
                 for (const property of observedProperties) {
                     if (property) {
@@ -169,10 +168,10 @@ const //
                 // check if used stores are ready
                 const //
                     storePromises = spec.stores?.map((store) => document[CONTEXT][`$${store}`][READY])
-                await Promise.all(storePromises)
-                spec.stores.forEach((s) => {
-                    this[CONTEXT][ADD_CONST](s, document[CONTEXT][`$${s}`])
-                })
+                await Promise.all(storePromises ?? [])
+                for (const store of spec.stores ?? []) {
+                    this[CONTEXT][ADD_CONST](store, document[CONTEXT][`$${store}`])
+                }
 
                 const allImports = await importPromises
                 for (const [key, value] of allImports) {
@@ -232,7 +231,7 @@ export const //
             element.innerHTML = phSlotSyntax(element.innerHTML)
         }
     },
-    parseImportAttribute = (importAttr: string): ImportMap | undefined => {
+    parseImportAttribute = (importAttr: string | null): ImportMap | undefined => {
         if (!importAttr) return undefined
 
         const //
@@ -245,6 +244,7 @@ export const //
             regular = /^(?<default>(\w+)\s*,?\s*)?(?<all>(\*\s+as\s+\w+)\s*,?\s*)?(?<named>\{[^}]+\})?$/,
             match = importAttr.match(regular),
             matchedGroups = match?.groups
+        result.named = []
         if (matchedGroups) {
             if (matchedGroups['default']) result.default = matchedGroups['default'].replace(',', '').trim()
             if (matchedGroups['all']) result['*'] = matchedGroups['all'].replace('* as ', '').replace(',', '').trim()
@@ -267,8 +267,13 @@ export const //
     processImports = async (element: Element | DocumentFragment) => {
         return Promise.all(
             Array.from(element.querySelectorAll('import[src]')).map(async (lib) => {
+                const source = lib.getAttribute('src')
+                if (!source) {
+                    console.error('Import element is missing src attribute', lib)
+                    return []
+                }
                 const //
-                    src = new URL(lib.getAttribute('src')),
+                    src = new URL(source),
                     srcURL = src.origin !== location.origin ? src.toString() : `${location.origin}/${src.toString()}`,
                     importedModule = await import(srcURL),
                     addToContext: [string, any][] = [],
@@ -277,14 +282,15 @@ export const //
                 if (imports) {
                     if (imports.default) addToContext.push([imports.default, importedModule.default])
                     if (imports['*']) addToContext.push([imports['*'], importedModule])
-                    for (const named of imports.named) {
+                    for (const named of imports.named ?? []) {
                         if (typeof named == 'string') {
                             const part = importedModule[named]
                             if (part) addToContext.push([named, part])
                             else console.warn(`Import "${named}" not found in module ${srcURL}`)
                         } else {
-                            const [originalName, asName] = named
-                            const part = importedModule[originalName]
+                            const //
+                                [originalName, asName] = named,
+                                part = importedModule[originalName]
                             if (part) addToContext.push([asName, part])
                             else console.warn(`Import "${originalName}" not found in module ${srcURL}`)
                         }
@@ -307,26 +313,28 @@ export const //
 export class PhComponent extends Base {
     mount() {
         const //
-            template = this.querySelector('template'),
-            tag = this.getAttribute('tag'),
-            attributes = template
-                .getAttribute('attributes')
-                ?.split(',')
-                ?.map((attribute) => attribute.split(':')[0].trim()),
-            properties = template
-                .getAttribute('properties')
-                ?.split(',')
-                ?.map((property) => property.split(':')[0].trim()),
-            closedShadowRoot = template.hasAttribute('closed'),
-            inline = template.hasAttribute('inline'),
-            stores =
-                template
-                    .getAttribute('use-stores')
+            template = this.querySelector('template')
+        if (template) {
+            const //
+                tag = this.getAttribute('tag'),
+                attributes = template
+                    .getAttribute('attributes')
                     ?.split(',')
-                    ?.map((s) => s.trim()) ?? []
-        if (template?.tagName === 'TEMPLATE') constructCustomElement(tag, { template, attributes, properties, inline, closedShadowRoot, stores })
-        else throw Error('no template element provided')
-
+                    ?.map((attribute) => attribute.split(':')[0].trim()),
+                properties = template
+                    .getAttribute('properties')
+                    ?.split(',')
+                    ?.map((property) => property.split(':')[0].trim()),
+                closedShadowRoot = template.hasAttribute('closed'),
+                inline = template.hasAttribute('inline'),
+                stores =
+                    template
+                        .getAttribute('use-stores')
+                        ?.split(',')
+                        ?.map((s) => s.trim()) ?? []
+            if (tag && template) constructCustomElement(tag, { template, attributes, properties, inline, closedShadowRoot, stores })
+            else throw Error('no template element provided')
+        }
         this.remove()
     }
 }

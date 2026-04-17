@@ -31,22 +31,8 @@
 
 ```html
 <head>
-    <script src="https://cdn.jsdelivr.net/gh/langej/ph@v0.1.1/dist/ph.js"></script>
     <script type="module">
-        ph.init() // trigger initialization
-    </script>
-</head>
-```
-
-> [!NOTE]
-> you need to use `type="module"` when calling `ph.init()` to ensure that it runs after the main script has loaded.
-
-Alternatively, you can import the `ph.esm.js` file directly in your module:
-
-```html
-<head>
-    <script type="module">
-        import ph from 'https://cdn.jsdelivr.net/gh/langej/ph@v0.1.1/dist/ph.esm.js'
+        import ph from 'https://cdn.jsdelivr.net/gh/langej/ph/dist/ph.js'
         ph.init()
     </script>
 </head>

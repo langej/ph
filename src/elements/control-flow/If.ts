@@ -1,18 +1,19 @@
 import { effect } from '@preact/signals-core'
-import { CONTEXT } from '@elements/declarations/Context'
+import { resolveContext } from '@elements/declarations/Context'
 import { Base } from '@utils/Base'
-import { createContextComputed } from '@utils/Utils'
+import { createContextComputed, Dispose } from '@utils/Utils'
 import { processAttributes, processAttributesForChildrenElements } from '@utils/Attributes'
 
 export class PhIf extends Base {
-    #disposes = []
-    #children
+    #disposes: Dispose[] = []
+    #children: ChildNode[]
 
     mount() {
-        this.#children = this.childNodes
+        this.#children = Array.from(this.childNodes)
         this.style.display = 'inline flow'
-        const value = this.getAttribute('value')
-        const context = this.getHost()?.[CONTEXT]
+        const //
+            value = this.getAttribute('value'),
+            context = resolveContext(this)
         if (value && context) {
             const computed = createContextComputed(context, value)
             this.#disposes.push(...processAttributesForChildrenElements(this, context))

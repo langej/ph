@@ -1,13 +1,17 @@
 {
-        "compilerOptions": {
-                "module": "ESNext",
-                "target": "ESNext",
-                "moduleResolution": "bundler",
-                "paths": {
-                        "@utils/*": ["./src/utils/*"],
-                        "@elements/*": ["./src/elements/*"]
-                },
-                "esModuleInterop": true
+    "compilerOptions": {
+        "module": "ESNext",
+        "target": "ESNext",
+        "moduleResolution": "bundler",
+        "paths": {
+            "@utils/*": ["./src/utils/*"],
+            "@elements/*": ["./src/elements/*"],
+            "@/*": ["./src/*"]
         },
-        "exclude": ["node_modules"]
+        "esModuleInterop": true,
+        "lib": ["DOM", "ES2020"],
+        "strictPropertyInitialization": false,
+        "noImplicitAny": false
+    },
+    "exclude": ["node_modules"]
 }
