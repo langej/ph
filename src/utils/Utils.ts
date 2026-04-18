@@ -36,4 +36,38 @@ export const //
     },
     delayProcessing = (callback: () => void) => {
         queueMicrotask(callback)
+    },
+    executeDeferredUnmount = (element: Element, onRemove: () => void) => {
+        if (!(element instanceof HTMLElement)) {
+            onRemove()
+            return
+        }
+
+        let isDeferred = false
+        const event = new CustomEvent('beforeremove', {
+            detail: {
+                defer: (promise: Promise<void>) => {
+                    isDeferred = true
+                    promise.then(onRemove)
+                },
+            },
+            cancelable: true,
+        })
+        element.dispatchEvent(event)
+
+        if (isDeferred) return
+
+        const leaveClass = element.getAttribute('ph-leave-class')
+        if (leaveClass) {
+            element.classList.add(...leaveClass.split(' '))
+        }
+
+        const animations = element.getAnimations?.() || []
+        if (animations.length > 0) {
+            Promise.all(animations.map((a) => a.finished))
+                .then(onRemove)
+                .catch(onRemove)
+        } else {
+            onRemove()
+        }
     }
