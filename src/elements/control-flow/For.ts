@@ -1,7 +1,7 @@
 import { effect, signal } from '@preact/signals-core'
 import { CONTEXT, Context, ADD_SIGNAL } from '@elements/declarations/Context'
 import { Base } from '@utils/Base'
-import { createContextComputed, phSlotSyntax } from '@utils/Utils'
+import { createContextComputed, phSlotSyntax, executeDeferredUnmount } from '@utils/Utils'
 import { processAttributes, processAttributesForChildrenElements, renameShortcutAttributesInTemplate } from '@utils/Attributes'
 
 const createElement = (content: HTMLElement) => {
@@ -35,6 +35,7 @@ export class PhFor extends Base {
         const //
             eachAttribute = template.getAttribute('ph:each'),
             keyAttribute = template.getAttribute('ph:key'),
+            beginComment = template.previousSibling,
             endComment = template.nextSibling,
             root = template.getRootNode() as ShadowRoot,
             context = (root.host ?? root)[CONTEXT],
@@ -49,7 +50,7 @@ export class PhFor extends Base {
                 const //
                     currentArray: any[] = computed.value || [],
                     newRenderedNodes = new Map<any, { el: HTMLElement; context: Context; indexSignal: any }>()
-                let insertBeforeNode = endComment
+                let currentDomNode = beginComment?.nextSibling
 
                 for (let index = 0; index < currentArray.length; index++) {
                     const //
@@ -66,7 +67,7 @@ export class PhFor extends Base {
                         const //
                             childContext = new Context(),
                             content = template.content.firstElementChild as HTMLElement,
-                            created = createElement(content),
+                            createdElement = createElement(content),
                             idxSignal = signal(index)
 
                         Object.setPrototypeOf(childContext, context)
@@ -74,17 +75,28 @@ export class PhFor extends Base {
 
                         if (indexName) childContext[ADD_SIGNAL](indexName, idxSignal)
 
-                        created[CONTEXT] = childContext
-                        created.disposes = [...processAttributesForChildrenElements(created, childContext), ...processAttributes(created, childContext)]
-                        nodeData = { el: created, context: childContext, indexSignal: idxSignal }
+                        createdElement[CONTEXT] = childContext
+                        createdElement.disposes = [
+                            ...processAttributesForChildrenElements(createdElement, childContext),
+                            ...processAttributes(createdElement, childContext),
+                        ]
+                        nodeData = { el: createdElement, context: childContext, indexSignal: idxSignal }
                     }
-                    endComment?.parentNode?.insertBefore(nodeData.el, insertBeforeNode)
+
+                    if (nodeData.el === currentDomNode) {
+                        currentDomNode = currentDomNode.nextSibling
+                    } else {
+                        endComment?.parentNode?.insertBefore(nodeData.el, currentDomNode || endComment)
+                    }
+
                     newRenderedNodes.set(keyValue, nodeData)
                 }
 
                 renderedNodes.forEach((nodeData) => {
                     nodeData.el.disposes?.forEach((d) => d())
-                    nodeData.el.remove()
+                    executeDeferredUnmount(nodeData.el, () => {
+                        nodeData.el.remove()
+                    })
                 })
 
                 renderedNodes = newRenderedNodes
