@@ -272,10 +272,13 @@ export const //
                     console.error('Import element is missing src attribute', lib)
                     return []
                 }
+                const src = URL.parse(source)?.href ?? URL.parse(source, document.baseURI)?.href
+                if (!src) {
+                    console.error('Failed to resolve import source', source)
+                    return []
+                }
                 const //
-                    src = new URL(source),
-                    srcURL = src.origin !== location.origin ? src.toString() : `${location.origin}/${src.toString()}`,
-                    importedModule = await import(srcURL),
+                    importedModule = await import(src),
                     addToContext: [string, any][] = [],
                     imports = parseImportAttribute(lib.getAttribute('import'))
 
@@ -286,13 +289,13 @@ export const //
                         if (typeof named == 'string') {
                             const part = importedModule[named]
                             if (part) addToContext.push([named, part])
-                            else console.warn(`Import "${named}" not found in module ${srcURL}`)
+                            else console.warn(`Import "${named}" not found in module ${src}`)
                         } else {
                             const //
                                 [originalName, asName] = named,
                                 part = importedModule[originalName]
                             if (part) addToContext.push([asName, part])
-                            else console.warn(`Import "${originalName}" not found in module ${srcURL}`)
+                            else console.warn(`Import "${originalName}" not found in module ${src}`)
                         }
                     }
                 }
