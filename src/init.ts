@@ -1,4 +1,4 @@
-import { Context, CONTEXT, PhComputed, PhMethod, PhSignal, PhConst } from '@elements/declarations/Context'
+import { ADD_SIGNAL, Context, CONTEXT, PhComputed, PhMethod, PhSignal, PhConst, type RouterState } from '@elements/declarations/Context'
 import { PhComponent, processForElements, processTemplateSyntax } from '@elements/declarations/Component'
 import { PhIf } from '@elements/control-flow/If'
 import { PhShow } from '@elements/control-flow/Show'
@@ -6,9 +6,26 @@ import { PhEither } from '@elements/control-flow/Either'
 import { PhFor } from '@elements/control-flow/For'
 import { PhDynamic } from '@elements/Dynamic'
 import { PhSlot } from '@elements/Slot'
+import { PhRouter } from '@elements/Router'
 import { PhStore } from '@elements/declarations/Store'
 import { defineComponent, noTemplateTreeWalker } from '@utils/Utils'
 import { renameShortcutAttributes, processAttributesForChildrenElements } from '@utils/Attributes'
+import { signal } from '@preact/signals-core'
+
+const navigate = (path: string, replace = false) => {
+    document.dispatchEvent(new CustomEvent('ph:navigate', { detail: { path, replace } }))
+}
+
+const initialRouterState: RouterState = {
+    pathname: window.location.pathname,
+    search: window.location.search,
+    hash: window.location.hash,
+    params: {},
+    push: (path) => navigate(path),
+    replace: (path) => navigate(path, true),
+    back: () => window.history.back(),
+    forward: () => window.history.forward(),
+}
 
 export const init = async () => {
     console.group('ph init')
@@ -18,6 +35,8 @@ export const init = async () => {
             value: new Context(),
             writable: false,
         })
+
+    !document[CONTEXT].router && document[CONTEXT][ADD_SIGNAL]('router', signal(initialRouterState))
 
     defineComponent('ph-signal', PhSignal)
     defineComponent('ph-computed', PhComputed)
@@ -29,6 +48,7 @@ export const init = async () => {
     defineComponent('ph-show', PhShow)
     defineComponent('ph-if', PhIf)
     defineComponent('ph-slot', PhSlot)
+    defineComponent('ph-router', PhRouter)
     defineComponent('ph-dynamic', PhDynamic)
     defineComponent('ph-component', PhComponent)
 

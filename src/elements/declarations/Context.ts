@@ -36,6 +36,18 @@ export const //
         return document[CONTEXT]
     }
 
+export type RouterState = {
+    pathname: string
+    search: string
+    hash: string
+    params: Record<string, string>
+    route?: HTMLElement
+    push: (path: string) => void
+    replace: (path: string) => void
+    back: () => void
+    forward: () => void
+}
+
 export class Context {
     [key: string]: any
 
