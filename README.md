@@ -23,6 +23,7 @@
         - [Refs](#refs)
         - [Lifecycle hooks and watchers](#lifecycle-hooks-and-watchers)
     - [Store](#store)
+    - [Router](#router)
     - [JS Imports](#js-imports)
 
 # How to use
@@ -450,6 +451,31 @@ To use a store inside a component, use the `use-stores` attribute on the `<templ
 ```
 
 [▶ flems](https://flems.io/#0=N4IgtglgJlA2CmIBcBWATAOgBwDYA0IAzvAgMYAu8UyIGAFuWLCAaQPYB2hbCN7ssAIYAHYtQIAzCAkLIA2qA6CwiJLQZMWIdh0q6aAHkKkAThGHkABOQCew+AF4AOuDZQArghcA+Jx0sBlhBgwmwmVsJ0lhImbGCWAOQM5KJIAPRppFAcGABWhFAkEABuJhgc8ORpAOZ0aUIc1fC5aZEAAkKUhFVQEN2tdHmECX6BlpEYEBwQ5AAUAJR+BmnGZha+HEuRALTdYfCWSirO2mzuuvAmPqOBBpQhnfAbY2MGO4QQ1Uqwh8qOLuxzuQXJZioJYO5-iAAAw+ZbvT7fZ4vAJvOjbdghdyUKC-Y4uKBnABGXhAoPBkJOgN0lgAVJY0HCBhi4sJsVQNjcUWjtipyHQ3HioVNTPAVLprv4US8jKZzORkdLpdSrA5LCrLABqSwARi5Sssy1W8sVMuZfIFUE5Uu5OwtgqOUMKovFwJApqVsrWCv1BsCGrVGu2ut90qNcvWodR5sqlutnrtsYdfxOJngxDdHrDxsjNr9-rONLVsLznpWEZ9pduMf5blNy3uwkeG3h6L2aetPMxoQqNPIgmqJ3b8G28AAHsom-BJa9G49LO5iLtyPtCFTC5Qru6o4besVvMBgOqN5cMBqAL7n5Z7rOom+H49A0+E9wkg6X68lW+GonYlf+NpSFgCBSAAa3XJ8yhFNNXQWHwAEkOBdeBdGWX9yH-b8DHQ-9LEA4CwIgi4ymdGCULmRZ3QAEXgZDULSHDOCwxiAKAkDwIBE8yjTDM4PdAAldNKjQv8mP1BsxSbQRKBbZlu04cjOwAQm2YMiTYfljxCBTdEISwAHdpB+OhBGKA5+QOQg-ksbppIOVSW2HUcJweJ4jRXNNnMnBBHI8kdx28tyVj8rzXO8LRiDIcgIE4WQ1B1JAcAAFhAc88EUP4aCGLQdD0cgaFS9KQEdLLSEIWRWE4PKCvPABdc8gA)
+
+## Router
+
+Use `<ph-router>` to render one direct child component for the current browser path. Each route declares its pattern with `path`; dynamic segments begin with `:` and `*` is a fallback route. Routes are considered in declaration order.
+
+```html
+<ph-router>
+    <home-page path="/"></home-page>
+    <task-list-page path="/tasks"></task-list-page>
+    <task-page path="/tasks/:taskId"></task-page>
+    <not-found-page path="*"></not-found-page>
+</ph-router>
+
+<ph-component tag="task-page">
+    <template>
+        <!-- The router is available in the context of components -->
+        <span>{{ router.params.taskId }}</span>
+        <button @click="router.push('/tasks')">Back</button>
+    </template>
+</ph-component>
+```
+
+The `router` object is available in every component context. It provides the current `pathname`, `search`, `hash`, `params`, and navigation methods such as `push(path)`, `replace(path)`, `back()`, and `forward()`.
+
+The router updates on browser back/forward navigation and intercepts ordinary same-origin links inside the router. It emits a `routechange` event with `{ path, params, route }`; for `/tasks/42`, `params` is `{ taskId: '42' }`.
 
 ## JS Imports
 
