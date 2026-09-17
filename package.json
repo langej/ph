@@ -15,9 +15,10 @@
     },
     "scripts": {
         "build": "rm -rf ./dist && bun ./build/build.ts",
-        "test": "bun run build && bunx playwright test",
+        "test": "bun run build && bun x playwright test",
         "test:ui": "bun run test --ui",
         "format": "prettier --write ./src/**/*.ts",
-        "test-server": "bunx http-server -p 3111"
+        "test-server": "bun x http-server -p 3111",
+        "test:container": "docker build --tag ph-playwright-tests . && docker run --rm ph-playwright-tests"
     }
 }

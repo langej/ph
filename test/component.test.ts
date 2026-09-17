@@ -34,7 +34,7 @@ test('test component with attributes', async ({ page }) => {
     const testDiv = page.locator('test-div')
     await expect(testDiv).toHaveText(`Hello test`)
     page.evaluate(() => {
-        document.querySelector('test-div').setAttribute('value', 'world')
+        document.querySelector('test-div')?.setAttribute('value', 'world')
     })
     await expect(testDiv).toHaveText(`Hello world`)
 })
