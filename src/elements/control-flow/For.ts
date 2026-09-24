@@ -75,7 +75,9 @@ export class PhFor extends Base {
 
                         if (indexName) childContext[ADD_SIGNAL](indexName, idxSignal)
 
-                        createdElement[CONTEXT] = childContext
+                        if (!customElements.get(createdElement.localName)) {
+                            Object.defineProperty(createdElement, CONTEXT, { value: childContext, configurable: true })
+                        }
                         createdElement.disposes = [
                             ...processAttributesForChildrenElements(createdElement, childContext),
                             ...processAttributes(createdElement, childContext),
