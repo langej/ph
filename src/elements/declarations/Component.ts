@@ -60,7 +60,7 @@ const //
         baseStyle.replaceSync(`:host { display: ${isInline ? 'inline-block' : 'block'}; ${isInline ? 'position: relative' : ''} }`)
         customStyle.replaceSync(styleElement?.textContent ?? '')
         styleElement?.remove()
-        root.adoptedStyleSheets.push(globalStyle, baseStyle, customStyle)
+        root.adoptedStyleSheets = [globalStyle, baseStyle, customStyle]
     },
     constructCustomElement = (
         tag: string,
@@ -86,6 +86,7 @@ const //
             #shadowRoot: ShadowRoot
             #disposes: Dispose[] = []
             #onRemoveFn: () => void = () => {}
+            #isMounted = false
 
             #context: Context
             get [CONTEXT]() {
@@ -126,6 +127,9 @@ const //
             }
 
             async mount() {
+                if (this.#isMounted) return
+                this.#isMounted = true
+
                 // set initial signals for attributes
                 for (const attribute of observedAttributes) {
                     if (attribute) {
@@ -176,16 +180,17 @@ const //
                     storePromises = spec.stores?.map((store) => document[CONTEXT][`$${store}`][READY])
                 await Promise.all(storePromises ?? [])
                 for (const store of spec.stores ?? []) {
-                    this[CONTEXT][ADD_CONST](store, document[CONTEXT][`$${store}`])
+                    if (!this[CONTEXT][store]) this[CONTEXT][ADD_CONST](store, document[CONTEXT][`$${store}`])
                 }
 
                 const allImports = await importPromises
                 for (const [key, value] of allImports) {
-                    this[CONTEXT][ADD_CONST](key, value)
+                    if (!this[CONTEXT][key]) this[CONTEXT][ADD_CONST](key, value)
                 }
 
                 // mount template to element
                 const root = this.#shadowRoot
+                root.replaceChildren()
                 root.append(clonedTemplate)
 
                 processSlots(this.#shadowRoot, this[CONTEXT])
@@ -219,6 +224,8 @@ const //
                 for (const d of this.#disposes) {
                     d()
                 }
+                this.#disposes = []
+                this.#isMounted = false
             }
         }
 
