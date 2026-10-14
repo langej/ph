@@ -185,7 +185,7 @@ const //
                 processSlots(this.#shadowRoot, this[CONTEXT])
 
                 // process <template *each="...">
-                processForElements(root)
+                PhFor.processForElements(root)
 
                 // run on mount function if exists
                 await onMountFunction?.()
@@ -219,11 +219,6 @@ const //
     }
 
 export const //
-    processForElements = (root: ShadowRoot | Element) => {
-        for (const template of root.querySelectorAll('template[ph\\:each]')) {
-            PhFor.fromTemplate(template as HTMLTemplateElement)
-        }
-    },
     processTemplateSyntax = (root: DocumentFragment | Element) => {
         const tw = noTemplateTreeWalker(root)
         while (tw.nextNode()) {
