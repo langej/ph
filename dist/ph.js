@@ -685,9 +685,11 @@ var renameShortcutAttributesInTemplate = (template) => {
   }
 };
 var processAttributesForChildrenElements = (root, context) => {
-  const disposes = [], tw = noTemplateTreeWalker(root);
+  const disposes = [], elements = [], tw = noTemplateTreeWalker(root);
   while (tw.nextNode()) {
-    const element = tw.currentNode;
+    elements.push(tw.currentNode);
+  }
+  for (const element of elements) {
     disposes.push(...processAttributes(element, context));
   }
   return disposes;
@@ -783,16 +785,17 @@ var processAttributes = (element, context) => {
       if (attributeName.startsWith(Directives["ph:"])) {
         const name = attributeName.replace(Directives["ph:"], "");
         if (name === "if") {
-          delayProcessing(() => {
-            const computed = createContextComputed(context, attributeValue), comment = document.createComment("ph-if");
-            element.before(comment);
-            disposes.push(E(() => {
-              if (computed.value)
+          const computed = createContextComputed(context, attributeValue), comment = document.createComment("ph-if");
+          element.before(comment);
+          disposes.push(E(() => {
+            if (Boolean(computed.value)) {
+              if (!element.isConnected)
                 comment.after(element);
-              else
+            } else {
+              if (element.isConnected)
                 element.remove();
-            }));
-          });
+            }
+          }));
         } else if (name === "show") {
           const computed = createContextComputed(context, attributeValue), displayValue = element.style.display;
           disposes.push(E(() => {
@@ -990,7 +993,7 @@ var createStyles = (root, isInline = false) => {
   baseStyle.replaceSync(`:host { display: ${isInline ? "inline-block" : "block"}; ${isInline ? "position: relative" : ""} }`);
   customStyle.replaceSync(styleElement?.textContent ?? "");
   styleElement?.remove();
-  root.adoptedStyleSheets.push(globalStyle, baseStyle, customStyle);
+  root.adoptedStyleSheets = [globalStyle, baseStyle, customStyle];
 };
 var constructCustomElement = (tag, spec) => {
   if (!tag)
@@ -1002,6 +1005,7 @@ var constructCustomElement = (tag, spec) => {
     #shadowRoot;
     #disposes = [];
     #onRemoveFn = () => {};
+    #isMounted = false;
     #context;
     get [CONTEXT]() {
       return this.#context;
@@ -1032,6 +1036,9 @@ var constructCustomElement = (tag, spec) => {
       }
     }
     async mount() {
+      if (this.#isMounted)
+        return;
+      this.#isMounted = true;
       for (const attribute of observedAttributes) {
         if (attribute) {
           const camelCased = toCamelCase(attribute);
@@ -1059,13 +1066,16 @@ var constructCustomElement = (tag, spec) => {
       const storePromises = spec.stores?.map((store) => document[CONTEXT][`$${store}`][READY]);
       await Promise.all(storePromises ?? []);
       for (const store of spec.stores ?? []) {
-        this[CONTEXT][ADD_CONST](store, document[CONTEXT][`$${store}`]);
+        if (!this[CONTEXT][store])
+          this[CONTEXT][ADD_CONST](store, document[CONTEXT][`$${store}`]);
       }
       const allImports = await importPromises;
       for (const [key, value] of allImports) {
-        this[CONTEXT][ADD_CONST](key, value);
+        if (!this[CONTEXT][key])
+          this[CONTEXT][ADD_CONST](key, value);
       }
       const root = this.#shadowRoot;
+      root.replaceChildren();
       root.append(clonedTemplate);
       processSlots(this.#shadowRoot, this[CONTEXT]);
       PhFor.processForElements(root);
@@ -1085,6 +1095,8 @@ var constructCustomElement = (tag, spec) => {
       for (const d of this.#disposes) {
         d();
       }
+      this.#disposes = [];
+      this.#isMounted = false;
     }
   };
   for (const property of observedProperties) {
@@ -1193,9 +1205,13 @@ class PhComponent extends Base {
 // src/elements/control-flow/If.ts
 class PhIf extends Base {
   #disposes = [];
-  #children;
+  #children = [];
+  #initialized = false;
   mount() {
-    this.#children = Array.from(this.childNodes);
+    if (!this.#initialized) {
+      this.#children = Array.from(this.childNodes);
+      this.#initialized = true;
+    }
     this.style.display = "inline flow";
     const value = this.getAttribute("value"), context = resolveContext(this);
     if (value && context) {
@@ -1203,11 +1219,17 @@ class PhIf extends Base {
       this.#disposes.push(...processAttributesForChildrenElements(this, context));
       this.#disposes.push(...processAttributes(this, context));
       this.#disposes.push(E(() => {
-        const v = computed.value;
-        if (v === true)
-          this.append(...this.#children);
-        else
-          this.#children = Array.from(this.childNodes).map((e) => this.removeChild(e));
+        const isTruthy = Boolean(computed.value);
+        if (isTruthy) {
+          if (this.childNodes.length === 0)
+            this.append(...this.#children);
+        } else {
+          if (this.childNodes.length > 0) {
+            for (const child of this.#children) {
+              child.remove();
+            }
+          }
+        }
       }));
     }
   }
@@ -1215,6 +1237,7 @@ class PhIf extends Base {
     for (const dispose of this.#disposes) {
       dispose();
     }
+    this.#disposes = [];
   }
 }
 
