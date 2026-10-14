@@ -53,9 +53,12 @@ export const //
     processAttributesForChildrenElements = (root: Document | HTMLElement | ShadowRoot, context: Context) => {
         const //
             disposes: Dispose[] = [],
+            elements: Element[] = [],
             tw = noTemplateTreeWalker(root)
         while (tw.nextNode()) {
-            const element = tw.currentNode as Element
+            elements.push(tw.currentNode as Element)
+        }
+        for (const element of elements) {
             disposes.push(...processAttributes(element, context))
         }
         return disposes
@@ -181,18 +184,19 @@ export const //
                 if (attributeName.startsWith(Directives['ph:'])) {
                     const name = attributeName.replace(Directives['ph:'], '')
                     if (name === 'if') {
-                        delayProcessing(() => {
-                            const //
-                                computed = createContextComputed(context, attributeValue),
-                                comment = document.createComment('ph-if')
-                            element.before(comment)
-                            disposes.push(
-                                effect(() => {
-                                    if (computed.value) comment.after(element)
-                                    else element.remove()
-                                }),
-                            )
-                        })
+                        const //
+                            computed = createContextComputed(context, attributeValue),
+                            comment = document.createComment('ph-if')
+                        element.before(comment)
+                        disposes.push(
+                            effect(() => {
+                                if (Boolean(computed.value)) {
+                                    if (!element.isConnected) comment.after(element)
+                                } else {
+                                    if (element.isConnected) element.remove()
+                                }
+                            }),
+                        )
                     } else if (name === 'show') {
                         const //
                             computed = createContextComputed(context, attributeValue),

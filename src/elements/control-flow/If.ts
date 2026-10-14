@@ -6,10 +6,14 @@ import { processAttributes, processAttributesForChildrenElements } from '@utils/
 
 export class PhIf extends Base {
     #disposes: Dispose[] = []
-    #children: ChildNode[]
+    #children: ChildNode[] = []
+    #initialized = false
 
     mount() {
-        this.#children = Array.from(this.childNodes)
+        if (!this.#initialized) {
+            this.#children = Array.from(this.childNodes)
+            this.#initialized = true
+        }
         this.style.display = 'inline flow'
         const //
             value = this.getAttribute('value'),
@@ -20,9 +24,16 @@ export class PhIf extends Base {
             this.#disposes.push(...processAttributes(this, context))
             this.#disposes.push(
                 effect(() => {
-                    const v = computed.value
-                    if (v === true) this.append(...this.#children)
-                    else this.#children = Array.from(this.childNodes).map((e) => this.removeChild(e))
+                    const isTruthy = Boolean(computed.value)
+                    if (isTruthy) {
+                        if (this.childNodes.length === 0) this.append(...this.#children)
+                    } else {
+                        if (this.childNodes.length > 0) {
+                            for (const child of this.#children) {
+                                child.remove()
+                            }
+                        }
+                    }
                 }),
             )
         }
@@ -32,5 +43,6 @@ export class PhIf extends Base {
         for (const dispose of this.#disposes) {
             dispose()
         }
+        this.#disposes = []
     }
 }

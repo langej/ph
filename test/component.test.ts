@@ -107,9 +107,11 @@ test('test component with properties', async ({ page }) => {
             <ph-component tag="test-outer">
                 <template use-stores="test">
                     <ph-computed name="users" value="test.users"></ph-computed>
-                    <template *each="user in users">
-                        <test-div .user="user"></test-div>
-                    </template>
+                    <div *if="users">
+                        <template *each="user in users">
+                            <test-div .user="user"></test-div>
+                        </template>
+                    </div>
                 </template>
             </ph-component>
 
