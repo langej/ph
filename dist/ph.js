@@ -1,43 +1,3 @@
-// src/utils/Base.ts
-class Base extends HTMLElement {
-  #disposes = [];
-  log(...content) {
-    const id = this.id ? ` #${this.id}` : "";
-    const name = this.getAttribute("name") ? ` :${this.getAttribute("name")}` : "";
-    console.log(`[${this.tagName}${name}${id}]`, ...content);
-  }
-  mount() {}
-  unmount() {}
-  connectedCallback() {
-    this.mount();
-  }
-  disconnectedCallback() {
-    this.unmount();
-    this.#disposes?.forEach((d) => d());
-    this.#disposes = [];
-  }
-  on(event, cb) {
-    this.#disposes?.push(() => this.removeEventListener(event, cb));
-    return this.addEventListener(event, cb);
-  }
-  getHost() {
-    const root = this.getRootNode();
-    return root.host ?? root;
-  }
-  emit(event, detail, options) {
-    const ev = !detail ? new Event(event, { composed: options?.composed ?? true, bubbles: options?.bubbles ?? true, cancelable: options?.cancelable ?? false }) : new CustomEvent(event, {
-      detail,
-      composed: options?.composed ?? true,
-      bubbles: options?.bubbles ?? true,
-      cancelable: options?.cancelable ?? false
-    });
-    this.dispatchEvent(ev);
-  }
-  onRemove(fn) {
-    this.#disposes.push(fn);
-  }
-}
-
 // node_modules/@preact/signals-core/dist/signals-core.module.js
 var i = Symbol.for("preact-signals");
 function t() {
@@ -505,10 +465,6 @@ var getTypedValue = ({ value, context }) => {
     console.error(error);
   }
 };
-var getAttributes = (element) => {
-  const context = resolveContext(element), name = element.getAttribute("name"), value = element.getAttribute("value");
-  return { context, name, value };
-};
 var CONTEXT = Symbol();
 var ADD_SIGNAL = Symbol();
 var ADD_COMPUTED = Symbol();
@@ -551,88 +507,115 @@ class Context {
       },
       set(v) {
         s.value = v;
-      }
+      },
+      configurable: true,
+      enumerable: true
     });
   }
   [ADD_COMPUTED](name, c) {
     Object.defineProperty(this, name, {
       get() {
         return c.value;
-      }
+      },
+      configurable: true,
+      enumerable: true
     });
   }
   [ADD_METHOD](name, m) {
     Object.defineProperty(this, name, {
-      value: m
+      value: m,
+      configurable: true,
+      enumerable: true
     });
   }
   [ADD_CONST](name, v) {
-    Object.defineProperty(this, name, { value: v, writable: false });
+    Object.defineProperty(this, name, { value: v, writable: false, configurable: true, enumerable: true });
   }
 }
-
-class PhSignal extends Base {
-  #handleLocalStorage(localStorageAttribute, name, context) {
-    if (localStorageAttribute !== null) {
-      const localStoragePrefix = localStorageAttribute ? localStorageAttribute + "/" : "", key = localStoragePrefix + name, localStorageValue = localStorage.getItem(key);
-      if (localStorageValue)
-        context[name] = JSON.parse(localStorageValue);
-      E(() => {
-        localStorage.setItem(key, JSON.stringify(context[name]));
-      });
+var processDeclarations = (root, context) => {
+  const declarations = root.querySelectorAll("ph-signal, ph-computed, ph-const, ph-method");
+  for (const el of declarations) {
+    const tagName = el.tagName.toLowerCase();
+    const name = el.getAttribute("name");
+    if (tagName === "ph-signal") {
+      const value = el.getAttribute("value");
+      if (name && value) {
+        const typedValue = getTypedValue({ value, context });
+        const localStorageAttribute = el.getAttribute("local-storage");
+        context[ADD_SIGNAL](name, d(typedValue));
+        if (localStorageAttribute !== null) {
+          const localStoragePrefix = localStorageAttribute ? localStorageAttribute + "/" : "";
+          const key = localStoragePrefix + name;
+          const localStorageValue = localStorage.getItem(key);
+          if (localStorageValue)
+            context[name] = JSON.parse(localStorageValue);
+          E(() => {
+            localStorage.setItem(key, JSON.stringify(context[name]));
+          });
+        }
+      }
+    } else if (tagName === "ph-computed") {
+      const value = el.getAttribute("value");
+      if (name && value) {
+        const typedValue = createContextComputed(context, value);
+        context[ADD_COMPUTED](name, typedValue);
+      }
+    } else if (tagName === "ph-const") {
+      const value = el.getAttribute("value");
+      if (name && value) {
+        const typedValue = getTypedValue({ value, context });
+        context[ADD_CONST](name, typedValue);
+      }
+    } else if (tagName === "ph-method") {
+      const scriptElement = el.querySelector("script");
+      const body = scriptElement?.textContent.trim() ?? "";
+      const args = scriptElement?.getAttribute("args")?.split(",")?.map((arg) => arg.split(":")[0].trim()).join(",");
+      if (name && body) {
+        const method = createContextMethod(context, body, args);
+        context[ADD_METHOD](name, method);
+      }
     }
+    el.remove();
   }
-  mount() {
-    const { name, value, context } = getAttributes(this);
-    if (name && value && context) {
-      const typedValue = getTypedValue({ value, context }), localStorageAttribute = this.getAttribute("local-storage");
-      context[ADD_SIGNAL](name, d(typedValue));
-      if (localStorageAttribute !== null)
-        this.#handleLocalStorage(localStorageAttribute, name, context);
-    }
-    this.remove();
-  }
-}
+};
 
-class PhComputed extends Base {
-  mount() {
-    const { name, value, context } = getAttributes(this);
-    if (name && value && context) {
-      const typedValue = createContextComputed(context, value);
-      context[ADD_COMPUTED](name, typedValue);
-    }
-    this.remove();
+// src/utils/Base.ts
+class Base extends HTMLElement {
+  #disposes = [];
+  log(...content) {
+    const id = this.id ? ` #${this.id}` : "";
+    const name = this.getAttribute("name") ? ` :${this.getAttribute("name")}` : "";
+    console.log(`[${this.tagName}${name}${id}]`, ...content);
   }
-}
-
-class PhConst extends Base {
-  mount() {
-    const { name, value, context } = getAttributes(this);
-    if (name && value && context) {
-      const typedValue = getTypedValue({ value, context });
-      context[ADD_CONST](name, typedValue);
-    }
-    this.remove();
+  mount() {}
+  unmount() {}
+  connectedCallback() {
+    this.mount();
   }
-}
-
-class PhMethod extends Base {
-  mount() {
-    this.style.display = "none";
-    const { context, name } = getAttributes(this), scriptElement = this.querySelector("script"), body = scriptElement?.textContent.trim() ?? "", args = scriptElement?.getAttribute("args")?.split(",")?.map((arg) => {
-      const [argName, argType] = arg.split(":").map((a) => a.trim());
-      return { name: argName, type: argType };
-    }), joined = args?.map((arg) => arg.name).join(",");
-    if (name && context && body) {
-      const method = createContextMethod(context, body, joined);
-      context[ADD_METHOD](name, method);
-    } else {
-      if (!context)
-        this.log("no context provided!");
-      if (!body)
-        this.log("no body provided!");
-    }
-    this.remove();
+  disconnectedCallback() {
+    this.unmount();
+    this.#disposes?.forEach((d) => d());
+    this.#disposes = [];
+  }
+  on(event, cb) {
+    this.#disposes?.push(() => this.removeEventListener(event, cb));
+    return this.addEventListener(event, cb);
+  }
+  getHost() {
+    const root = this.getRootNode();
+    return root.host ?? root;
+  }
+  emit(event, detail, options) {
+    const ev = !detail ? new Event(event, { composed: options?.composed ?? true, bubbles: options?.bubbles ?? true, cancelable: options?.cancelable ?? false }) : new CustomEvent(event, {
+      detail,
+      composed: options?.composed ?? true,
+      bubbles: options?.bubbles ?? true,
+      cancelable: options?.cancelable ?? false
+    });
+    this.dispatchEvent(ev);
+  }
+  onRemove(fn) {
+    this.#disposes.push(fn);
   }
 }
 
@@ -817,7 +800,7 @@ var processAttributes = (element, context) => {
 // src/elements/control-flow/For.ts
 var createElement = (content) => {
   const el = content.cloneNode(true);
-  el.innerHTML = phSlotSyntax(el.innerHTML);
+  processTemplateSyntax(el);
   return el;
 };
 
@@ -928,6 +911,7 @@ class PhStore extends Base {
         for (const [key, value] of imports) {
           this[CONTEXT][ADD_CONST](key, value);
         }
+        processDeclarations(clonedTemplate, this[CONTEXT]);
         this.#shadowroot.append(clonedTemplate);
         await initFn?.();
         Object.seal(this[CONTEXT]);
@@ -1065,21 +1049,28 @@ var constructCustomElement = (tag, spec) => {
       processRefs(clonedTemplate, this[CONTEXT]);
       const storePromises = spec.stores?.map((store) => document[CONTEXT][`$${store}`][READY]);
       await Promise.all(storePromises ?? []);
+      if (!this.isConnected)
+        return;
       for (const store of spec.stores ?? []) {
         if (!this[CONTEXT][store])
           this[CONTEXT][ADD_CONST](store, document[CONTEXT][`$${store}`]);
       }
       const allImports = await importPromises;
+      if (!this.isConnected)
+        return;
       for (const [key, value] of allImports) {
         if (!this[CONTEXT][key])
           this[CONTEXT][ADD_CONST](key, value);
       }
+      processDeclarations(clonedTemplate, this[CONTEXT]);
       const root = this.#shadowRoot;
       root.replaceChildren();
       root.append(clonedTemplate);
       processSlots(this.#shadowRoot, this[CONTEXT]);
       PhFor.processForElements(root);
       await onMountFunction?.();
+      if (!this.isConnected)
+        return;
       const childrenDisposes = processAttributesForChildrenElements(root, this[CONTEXT]);
       this.#disposes.push(...childrenDisposes);
       Object.seal(this[CONTEXT]);
@@ -1115,10 +1106,24 @@ var constructCustomElement = (tag, spec) => {
   defineComponent(tag, ComponentClass);
 };
 var processTemplateSyntax = (root) => {
-  const tw = noTemplateTreeWalker(root);
-  while (tw.nextNode()) {
-    const element = tw.currentNode;
-    element.innerHTML = phSlotSyntax(element.innerHTML);
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, (node) => {
+    const parent = node.parentElement;
+    if (parent && (parent.tagName === "TEMPLATE" || parent.tagName === "SCRIPT" || parent.tagName === "STYLE")) {
+      return NodeFilter.FILTER_REJECT;
+    }
+    return node.nodeValue && node.nodeValue.includes("{{") ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+  });
+  const textNodes = [];
+  while (walker.nextNode()) {
+    textNodes.push(walker.currentNode);
+  }
+  for (const textNode of textNodes) {
+    if (!textNode.nodeValue || !textNode.nodeValue.includes("{{"))
+      continue;
+    const html = phSlotSyntax(textNode.nodeValue);
+    const template = document.createElement("template");
+    template.innerHTML = html;
+    textNode.replaceWith(...template.content.childNodes);
   }
 };
 var parseImportAttribute = (importAttr) => {
@@ -1468,10 +1473,6 @@ var init = async () => {
     writable: false
   });
   !document[CONTEXT].router && document[CONTEXT][ADD_SIGNAL]("router", d(initialRouterState));
-  defineComponent("ph-signal", PhSignal);
-  defineComponent("ph-computed", PhComputed);
-  defineComponent("ph-const", PhConst);
-  defineComponent("ph-method", PhMethod);
   defineComponent("ph-store", PhStore);
   defineComponent("ph-for", PhFor);
   defineComponent("ph-either", PhEither);
@@ -1481,6 +1482,7 @@ var init = async () => {
   defineComponent("ph-router", PhRouter);
   defineComponent("ph-dynamic", PhDynamic);
   defineComponent("ph-component", PhComponent);
+  processDeclarations(document.body, document[CONTEXT]);
   const tw = noTemplateTreeWalker(document.body);
   while (tw.nextNode()) {
     const element = tw.currentNode;
