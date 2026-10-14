@@ -203,8 +203,9 @@ export const //
                                 else (element as HTMLElement).style.display = 'none'
                             }),
                         )
-                    }
-                    element.removeAttribute(attributeName)
+                    } else if (name !== 'each' && name !== 'key') element.removeAttribute(attributeName)
+
+                    if (name === 'if' || name === 'show') element.removeAttribute(attributeName)
                 }
             }
         }

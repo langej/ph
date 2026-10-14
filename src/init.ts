@@ -1,5 +1,5 @@
 import { ADD_SIGNAL, Context, CONTEXT, PhComputed, PhMethod, PhSignal, PhConst, type RouterState } from '@elements/declarations/Context'
-import { PhComponent, processForElements, processTemplateSyntax } from '@elements/declarations/Component'
+import { PhComponent, processTemplateSyntax } from '@elements/declarations/Component'
 import { PhIf } from '@elements/control-flow/If'
 import { PhShow } from '@elements/control-flow/Show'
 import { PhEither } from '@elements/control-flow/Either'
@@ -59,7 +59,7 @@ export const init = async () => {
     }
     processTemplateSyntax(document.body)
     processAttributesForChildrenElements(document.body, document[CONTEXT])
-    processForElements(document.body)
+    PhFor.processForElements(document.body)
 
     console.groupEnd()
 }

@@ -56,6 +56,79 @@ test('test ph-for element with updates', async ({ page }) => {
     await expect(page.locator('#id-2')).toHaveText('4')
 })
 
+test('test nested ph-for elements', async ({ page }) => {
+    await page.setContent(
+        createContent(/*html*/ `
+            <ph-component tag="test-div">
+                <template>
+                    <ph-signal name="groups" value="[['a', 'b'], ['c']]"></ph-signal>
+
+                    <ph-for *each="group, groupIdx in groups">
+                        <template>
+                            <section :id="'group-' + groupIdx">
+                                <ph-for *each="item, itemIdx in group">
+                                    <template>
+                                        <div :id="'item-' + groupIdx + '-' + itemIdx">{{ item }}</div>
+                                    </template>
+                                </ph-for>
+                            </section>
+                        </template>
+                    </ph-for>
+                </template>
+            </ph-component>
+
+            <test-div></test-div>
+        `),
+        { waitUntil: 'domcontentloaded' },
+    )
+
+    await expect(page.locator('#item-0-0')).toHaveText('a')
+    await expect(page.locator('#item-0-1')).toHaveText('b')
+    await expect(page.locator('#item-1-0')).toHaveText('c')
+    await expect(page.locator('#item-1-1')).not.toBeAttached()
+})
+
+test('nested template each loops support four levels and updates', async ({ page }) => {
+    await page.setContent(
+        createContent(/*html*/ `
+            <ph-component tag="test-div">
+                <template>
+                    <ph-signal name="groups" value="[[[['deep-0']]]]"></ph-signal>
+
+                    <template *each="level1, idx1 in groups">
+                        <section :id="'level-1-' + idx1">
+                            <template *each="level2, idx2 in level1">
+                                <section :id="'level-2-' + idx1 + '-' + idx2">
+                                    <template *each="level3, idx3 in level2">
+                                        <section :id="'level-3-' + idx1 + '-' + idx2 + '-' + idx3">
+                                            <template *each="value, idx4 in level3">
+                                                <div :id="'leaf-' + idx1 + '-' + idx2 + '-' + idx3 + '-' + idx4">{{ value }}</div>
+                                            </template>
+                                        </section>
+                                    </template>
+                                </section>
+                            </template>
+                        </section>
+                    </template>
+
+                    <button @click="groups = [...groups, [[['deep-1']]]]">Add</button>
+                    <button @click="groups = groups.slice(0, -1)">Remove</button>
+                </template>
+            </ph-component>
+
+            <test-div></test-div>
+        `),
+        { waitUntil: 'domcontentloaded' },
+    )
+
+    await expect(page.locator('#leaf-0-0-0-0')).toHaveText('deep-0')
+    await page.getByRole('button', { name: 'Add' }).click()
+    await expect(page.locator('#leaf-1-0-0-0')).toHaveText('deep-1')
+    await page.getByRole('button', { name: 'Remove' }).click()
+    await expect(page.locator('#leaf-1-0-0-0')).not.toBeAttached()
+    await expect(page.locator('#leaf-0-0-0-0')).toHaveText('deep-0')
+})
+
 test('test for template element with parent element', async ({ page }) => {
     await page.setContent(
         createContent(/*html*/ `

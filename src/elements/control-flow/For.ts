@@ -1,8 +1,8 @@
 import { effect, signal } from '@preact/signals-core'
-import { CONTEXT, Context, ADD_SIGNAL } from '@elements/declarations/Context'
+import { CONTEXT, Context, ADD_SIGNAL, resolveContext } from '@elements/declarations/Context'
 import { Base } from '@utils/Base'
 import { createContextComputed, phSlotSyntax, executeDeferredUnmount } from '@utils/Utils'
-import { processAttributes, processAttributesForChildrenElements, renameShortcutAttributesInTemplate } from '@utils/Attributes'
+import { processAttributes, processAttributesForChildrenElements, renameShortcutAttributes, renameShortcutAttributesInTemplate } from '@utils/Attributes'
 
 const createElement = (content: HTMLElement) => {
     const el = content.cloneNode(true) as HTMLElement
@@ -11,15 +11,28 @@ const createElement = (content: HTMLElement) => {
 }
 
 export class PhFor extends Base {
+    static processForElements(root: ShadowRoot | Element) {
+        for (const template of root.querySelectorAll('template[ph\\:each]')) {
+            PhFor.fromTemplate(template as HTMLTemplateElement)
+        }
+    }
+
     mount() {
         this.style.display = 'contents'
+        renameShortcutAttributes(this)
         const //
             templateElement = this.firstElementChild,
             phEach = this.getAttribute('ph:each'),
             phKey = this.getAttribute('ph:key')
         if (templateElement?.tagName === 'TEMPLATE') {
-            if (phEach) templateElement.setAttribute('ph:each', phEach)
-            if (phKey) templateElement.setAttribute('ph:key', phKey)
+            if (phEach) {
+                templateElement.setAttribute('ph:each', phEach)
+                this.removeAttribute('ph:each')
+            }
+            if (phKey) {
+                templateElement.setAttribute('ph:key', phKey)
+                this.removeAttribute('ph:key')
+            }
             PhFor.fromTemplate(templateElement as HTMLTemplateElement)
         } else {
             throw Error('no template element provided')
@@ -37,8 +50,7 @@ export class PhFor extends Base {
             keyAttribute = template.getAttribute('ph:key'),
             beginComment = template.previousSibling,
             endComment = template.nextSibling,
-            root = template.getRootNode() as ShadowRoot,
-            context = (root.host ?? root)[CONTEXT],
+            context = resolveContext(template),
             [definition, collection] = eachAttribute?.split(' in ') ?? [],
             [itemName, indexName] = definition.split(',').map((it) => it.trim())
 
@@ -78,6 +90,7 @@ export class PhFor extends Base {
                         if (!customElements.get(createdElement.localName)) {
                             Object.defineProperty(createdElement, CONTEXT, { value: childContext, configurable: true })
                         }
+                        PhFor.processForElements(createdElement)
                         createdElement.disposes = [
                             ...processAttributesForChildrenElements(createdElement, childContext),
                             ...processAttributes(createdElement, childContext),
