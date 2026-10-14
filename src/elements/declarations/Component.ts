@@ -114,7 +114,13 @@ const //
                 // set initial signals for properties
                 for (const property of observedProperties) {
                     if (property) {
-                        this[CONTEXT][ADD_SIGNAL](property, signal(undefined))
+                        const //
+                            hasInitialValue = Object.prototype.hasOwnProperty.call(this, property),
+                            initialValue = hasInitialValue ? Reflect.get(this, property) : undefined
+                        if (hasInitialValue && !Reflect.deleteProperty(this, property)) {
+                            throw new TypeError(`cannot initialize component property "${property}"`)
+                        }
+                        this[CONTEXT][ADD_SIGNAL](property, signal(initialValue))
                     }
                 }
             }
@@ -214,6 +220,19 @@ const //
                     d()
                 }
             }
+        }
+
+        for (const property of observedProperties) {
+            if (!property) continue
+            Object.defineProperty(ComponentClass.prototype, property, {
+                get() {
+                    return this[CONTEXT][property]
+                },
+                set(value) {
+                    this[CONTEXT][property] = value
+                },
+                configurable: true,
+            })
         }
         defineComponent(tag, ComponentClass)
     }
