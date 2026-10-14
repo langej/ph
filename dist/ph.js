@@ -1,1 +1,1479 @@
-class d extends HTMLElement{#t=[];log(...e){let t=this.id?` #${this.id}`:"",o=this.getAttribute("name")?` :${this.getAttribute("name")}`:"";console.log(`[${this.tagName}${o}${t}]`,...e)}mount(){}unmount(){}connectedCallback(){this.mount()}disconnectedCallback(){this.unmount(),this.#t?.forEach((e)=>e()),this.#t=[]}on(e,t){return this.#t?.push(()=>this.removeEventListener(e,t)),this.addEventListener(e,t)}getHost(){let e=this.getRootNode();return e.host??e}emit(e,t,o){let i=!t?new Event(e,{composed:o?.composed??!0,bubbles:o?.bubbles??!0,cancelable:o?.cancelable??!1}):new CustomEvent(e,{detail:t,composed:o?.composed??!0,bubbles:o?.bubbles??!0,cancelable:o?.cancelable??!1});this.dispatchEvent(i)}onRemove(e){this.#t.push(e)}}var Ot=Symbol.for("preact-signals");function tt(){if(!(_>1)){var e,t=!1;while(q!==void 0){var o=q;q=void 0,Q++;while(o!==void 0){var i=o.o;if(o.o=void 0,o.f&=-3,!(8&o.f)&&St(o))try{o.c()}catch(r){if(!t)e=r,t=!0}o=i}}if(Q=0,_--,t)throw e}else _--}var u=void 0;function gt(e){var t=u;u=void 0;try{return e()}finally{u=t}}var q=void 0,_=0,Q=0,X=0;function Et(e){if(u!==void 0){var t=e.n;if(t===void 0||t.t!==u){if(t={i:0,S:e,p:u.s,n:void 0,t:u,e:void 0,x:void 0,r:t},u.s!==void 0)u.s.n=t;if(u.s=t,e.n=t,32&u.f)e.S(t);return t}else if(t.i===-1){if(t.i=0,t.n!==void 0){if(t.n.p=t.p,t.p!==void 0)t.p.n=t.n;t.p=u.s,t.n=void 0,u.s.n=t,u.s=t}return t}}}function E(e,t){this.v=e,this.i=0,this.n=void 0,this.t=void 0,this.W=t==null?void 0:t.watched,this.Z=t==null?void 0:t.unwatched,this.name=t==null?void 0:t.name}E.prototype.brand=Ot;E.prototype.h=function(){return!0};E.prototype.S=function(e){var t=this,o=this.t;if(o!==e&&e.e===void 0)if(e.x=o,this.t=e,o!==void 0)o.e=e;else gt(function(){var i;(i=t.W)==null||i.call(t)})};E.prototype.U=function(e){var t=this;if(this.t!==void 0){var{e:o,x:i}=e;if(o!==void 0)o.x=i,e.e=void 0;if(i!==void 0)i.e=o,e.x=void 0;if(e===this.t){if(this.t=i,i===void 0)gt(function(){var r;(r=t.Z)==null||r.call(t)})}}};E.prototype.subscribe=function(e){var t=this;return p(function(){var o=t.value,i=u;u=void 0;try{e(o)}finally{u=i}},{name:"sub"})};E.prototype.valueOf=function(){return this.value};E.prototype.toString=function(){return this.value+""};E.prototype.toJSON=function(){return this.value};E.prototype.peek=function(){var e=u;u=void 0;try{return this.value}finally{u=e}};Object.defineProperty(E.prototype,"value",{get:function(){var e=Et(this);if(e!==void 0)e.i=this.i;return this.v},set:function(e){if(e!==this.v){if(Q>100)throw Error("Cycle detected");this.v=e,this.i++,X++,_++;try{for(var t=this.t;t!==void 0;t=t.x)t.t.N()}finally{tt()}}}});function T(e,t){return new E(e,t)}function St(e){for(var t=e.s;t!==void 0;t=t.n)if(t.S.i!==t.i||!t.S.h()||t.S.i!==t.i)return!0;return!1}function xt(e){for(var t=e.s;t!==void 0;t=t.n){var o=t.S.n;if(o!==void 0)t.r=o;if(t.S.n=t,t.i=-1,t.n===void 0){e.s=t;break}}}function wt(e){var t=e.s,o=void 0;while(t!==void 0){var i=t.p;if(t.i===-1){if(t.S.U(t),i!==void 0)i.n=t.n;if(t.n!==void 0)t.n.p=i}else o=t;if(t.S.n=t.r,t.r!==void 0)t.r=void 0;t=i}e.s=o}function j(e,t){E.call(this,void 0),this.x=e,this.s=void 0,this.g=X-1,this.f=4,this.W=t==null?void 0:t.watched,this.Z=t==null?void 0:t.unwatched,this.name=t==null?void 0:t.name}j.prototype=new E;j.prototype.h=function(){if(this.f&=-3,1&this.f)return!1;if((36&this.f)==32)return!0;if(this.f&=-5,this.g===X)return!0;if(this.g=X,this.f|=1,this.i>0&&!St(this))return this.f&=-2,!0;var e=u;try{xt(this),u=this;var t=this.x();if(16&this.f||this.v!==t||this.i===0)this.v=t,this.f&=-17,this.i++}catch(o){this.v=o,this.f|=16,this.i++}return u=e,wt(this),this.f&=-2,!0};j.prototype.S=function(e){if(this.t===void 0){this.f|=36;for(var t=this.s;t!==void 0;t=t.n)t.S.S(t)}E.prototype.S.call(this,e)};j.prototype.U=function(e){if(this.t!==void 0){if(E.prototype.U.call(this,e),this.t===void 0){this.f&=-33;for(var t=this.s;t!==void 0;t=t.n)t.S.U(t)}}};j.prototype.N=function(){if(!(2&this.f)){this.f|=6;for(var e=this.t;e!==void 0;e=e.x)e.t.N()}};Object.defineProperty(j.prototype,"value",{get:function(){if(1&this.f)throw Error("Cycle detected");var e=Et(this);if(this.h(),e!==void 0)e.i=this.i;if(16&this.f)throw this.v;return this.v}});function Ct(e,t){return new j(e,t)}function Tt(e){var t=e.u;if(e.u=void 0,typeof t=="function"){_++;var o=u;u=void 0;try{t()}catch(i){throw e.f&=-2,e.f|=8,et(e),i}finally{u=o,tt()}}}function et(e){for(var t=e.s;t!==void 0;t=t.n)t.S.U(t);e.x=void 0,e.s=void 0,Tt(e)}function Ft(e){if(u!==this)throw Error("Out-of-order effect");if(wt(this),u=e,this.f&=-2,8&this.f)et(this);tt()}function B(e,t){this.x=e,this.u=void 0,this.s=void 0,this.o=void 0,this.f=32,this.name=t==null?void 0:t.name}B.prototype.c=function(){var e=this.S();try{if(8&this.f)return;if(this.x===void 0)return;var t=this.x();if(typeof t=="function")this.u=t}finally{e()}};B.prototype.S=function(){if(1&this.f)throw Error("Cycle detected");this.f|=1,this.f&=-9,Tt(this),xt(this),_++;var e=u;return u=this,Ft.bind(this,e)};B.prototype.N=function(){if(!(2&this.f))this.f|=2,this.o=q,q=this};B.prototype.d=function(){if(this.f|=8,!(1&this.f))et(this)};B.prototype.dispose=function(){this.d()};function p(e,t){var o=new B(e,t);try{o.c()}catch(r){throw o.d(),r}var i=o.d.bind(o);return i[Symbol.dispose]=i,i}var $t=(e,t)=>e.replace(/{{[^{}]*}}/g,(o)=>t(o.replace(/[{}]/g,""))),At=document.createTreeWalker.bind(document),g=(e,t)=>!customElements.get(e)&&customElements.define(e,t),V=(e)=>e.replace(/-[a-z]/g,(t)=>t[1].toUpperCase()),G=(e,t)=>$t(e,(o)=>{let i=o.replace(/[{}]/g," ");if(t)i=t(i);return`<ph-slot value="${i}"></ph-slot>`}),v=(e,t)=>Function("context","computed",`with(context){return computed(() => ${t})}`)(e,Ct),C=(e,t,o="")=>{let i=t??"",r=t?.includes("await");return Function("context",`return ${r?"async":""} function(${o}){with (context) {${i}}}`)(e)},K=(e)=>At(e,NodeFilter.SHOW_ELEMENT,(t)=>t.nodeType===Node.ELEMENT_NODE&&t.tagName!=="TEMPLATE"?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT),Nt=(e,t)=>At(e,NodeFilter.SHOW_ELEMENT,t),D=(e)=>{queueMicrotask(e)},Mt=(e,t)=>{if(!(e instanceof HTMLElement)){t();return}let o=!1,i=new CustomEvent("beforeremove",{detail:{defer:(c)=>{o=!0,c.then(t)}},cancelable:!0});if(e.dispatchEvent(i),o)return;let r=e.getAttribute("ph-leave-class");if(r)e.classList.add(...r.split(" "));let a=e.getAnimations?.()||[];if(a.length>0)Promise.all(a.map((c)=>c.finished)).then(t).catch(t);else t()};var Lt=({value:e,context:t})=>{try{return C(t,`return ${e}`)()}catch(o){console.error(o)}},Z=(e)=>{let t=w(e),o=e.getAttribute("name"),i=e.getAttribute("value");return{context:t,name:o,value:i}},l=Symbol(),L=Symbol(),Pt=Symbol(),Dt=Symbol(),A=Symbol(),J=Symbol(),w=(e)=>{let t=e;while(t&&t!==document){if(t[l])return t[l];if(t instanceof ShadowRoot)t=t.host;else t=t.parentNode}return document[l]};class R{slots={};constructor(){this[J]("default")}[J](e){let t=T([]);Object.defineProperty(this.slots,e,{get(){return t.value},set(o){t.value=o}})}[L](e,t){Object.defineProperty(this,e,{get(){return t.value},set(o){t.value=o}})}[Pt](e,t){Object.defineProperty(this,e,{get(){return t.value}})}[Dt](e,t){Object.defineProperty(this,e,{value:t})}[A](e,t){Object.defineProperty(this,e,{value:t,writable:!1})}}class ot extends d{#t(e,t,o){if(e!==null){let i=e?e+"/":"",r=i+t,a=localStorage.getItem(r);if(a)o[t]=JSON.parse(a);p(()=>{localStorage.setItem(r,JSON.stringify(o[t]))})}}mount(){let{name:e,value:t,context:o}=Z(this);if(e&&t&&o){let i=Lt({value:t,context:o}),r=this.getAttribute("local-storage");if(o[L](e,T(i)),r!==null)this.#t(r,e,o)}this.remove()}}class it extends d{mount(){let{name:e,value:t,context:o}=Z(this);if(e&&t&&o){let i=v(o,t);o[Pt](e,i)}this.remove()}}class rt extends d{mount(){let{name:e,value:t,context:o}=Z(this);if(e&&t&&o){let i=Lt({value:t,context:o});o[A](e,i)}this.remove()}}class st extends d{mount(){this.style.display="none";let{context:e,name:t}=Z(this),o=this.querySelector("script"),i=o?.textContent.trim()??"",r=o?.getAttribute("args")?.split(",")?.map((c)=>{let[s,n]=c.split(":").map((h)=>h.trim());return{name:s,type:n}}),a=r?.map((c)=>c.name).join(",");if(t&&e&&i){let c=C(e,i,a);e[Dt](t,c)}else{if(!e)this.log("no context provided!");if(!i)this.log("no body provided!")}this.remove()}}var S={"bind:":"bind:","bool:":"bool:","on:":"on:","prop:":"prop:","ph:":"ph:"},It={"@":(e)=>e.replace("@",S["on:"]),".":(e)=>e.replace(".",S["prop:"]),"?":(e)=>e.replace("?",S["bool:"]),":":(e)=>e.replace(":",S["bind:"]),"*":(e)=>e.replace("*",S["ph:"])},nt={ctrl:()=>(e)=>e.ctrlKey,shift:()=>(e)=>e.shiftKey,alt:()=>(e)=>e.altKey,meta:()=>(e)=>e.metaKey,enter:()=>(e)=>e.key==="Enter",escape:()=>(e)=>e.key==="Escape",throttle:(e)=>{let t=0;return()=>{let o=Date.now();if(o-t>=e)return t=o,!0}},debounce:(e)=>{let t;return(o)=>{clearTimeout(t),t=setTimeout(()=>{o()},e)}}},Y=(e)=>{let t=Nt(e);while(t.nextNode())z(t.currentNode)},N=(e,t)=>{let o=[],i=K(e);while(i.nextNode()){let r=i.currentNode;o.push(...H(r,t))}return o},z=(e)=>{for(let t of e.getAttributeNames()){let o=t,i=It[o[0]]?.(o),r=e.getAttribute(o);if(i&&r)e.setAttribute(i,r),e.removeAttribute(o)}},H=(e,t)=>{let o=[],i=e.getAttributeNames();for(let r of i){let a=e.getAttribute(r);if(a&&a!==""){if(r.startsWith(S["on:"])){let[s,...n]=r.replace(S["on:"],"").split("."),h=[],y={},P=C(t,a,"$e"),F=!1,I=!1,M;n.forEach((f)=>{let[b,...O]=f.split(":");switch(b){case"once":y.once=!0;break;case"passive":y.passive=!0;break;case"capture":y.capture=!0;break;case"prevent":F=!0;break;case"stop":I=!0;break;case"debounce":M=nt.debounce(Number(O[0]));break;default:if(nt[b])h.push(nt[b]?.(...O))}}),D(()=>{e.addEventListener(s,(f)=>{if(F)f.preventDefault();if(I)f.stopPropagation();if(h.every((b)=>b(f)))if(M)M(()=>P(f));else P(f)},y)}),e.removeAttribute(r)}if(r.startsWith(S["bind:"])){let s=v(t,a),n=r.replace(S["bind:"],"");o.push(p(()=>{if(s.value!==void 0&&s.value!==null)e.setAttribute(n,s.value);else e.removeAttribute(n)})),e.removeAttribute(r)}if(r.startsWith(S["prop:"])){let s=V(r.replace(S["prop:"],"")),n=v(t,a);o.push(p(()=>{let h=e[l]??e;if(h[s]!==n.value)h[s]=n.value})),e.removeAttribute(r)}if(r.startsWith(S["bool:"])){let s=r.replace(S["bool:"],""),n=v(t,a);o.push(p(()=>{if(n.value)e.toggleAttribute(s,!0);else e.toggleAttribute(s,!1)})),e.removeAttribute(r)}if(r.startsWith(S["ph:"])){let s=r.replace(S["ph:"],"");if(s==="if")D(()=>{let n=v(t,a),h=document.createComment("ph-if");e.before(h),o.push(p(()=>{if(n.value)h.after(e);else e.remove()}))});else if(s==="show"){let n=v(t,a),h=e.style.display;o.push(p(()=>{if(n.value)e.style.display=h;else e.style.display="none"}))}else if(s!=="each"&&s!=="key")e.removeAttribute(r);if(s==="if"||s==="show")e.removeAttribute(r)}}}return o};var Wt=(e)=>{let t=e.cloneNode(!0);return t.innerHTML=G(t.innerHTML),t};class k extends d{static processForElements(e){for(let t of e.querySelectorAll("template[ph\\:each]"))k.fromTemplate(t)}mount(){this.style.display="contents",z(this);let e=this.firstElementChild,t=this.getAttribute("ph:each"),o=this.getAttribute("ph:key");if(e?.tagName==="TEMPLATE"){if(t)e.setAttribute("ph:each",t),this.removeAttribute("ph:each");if(o)e.setAttribute("ph:key",o),this.removeAttribute("ph:key");k.fromTemplate(e)}else throw Error("no template element provided")}static fromTemplate(e){Y(e.content),e.before(document.createComment("ph-for begin")),e.after(document.createComment("ph-for end"));let t=e.getAttribute("ph:each"),o=e.getAttribute("ph:key"),{previousSibling:i,nextSibling:r}=e,a=w(e),[c,s]=t?.split(" in ")??[],[n,h]=c.split(",").map((y)=>y.trim());if(a&&n&&s&&e){let y=v(a,s),P=new Map;p(()=>{let F=y.value||[],I=new Map,M=i?.nextSibling;for(let f=0;f<F.length;f++){let b=F[f],O=(o?b[o]:f)??f,m=P.get(O);if(m)m.indexSignal.value=f,m.context[n]=b,P.delete(O);else{let x=new R,U=e.content.firstElementChild,W=Wt(U),bt=T(f);if(Object.setPrototypeOf(x,a),x[L](n,T(b)),h)x[L](h,bt);if(!customElements.get(W.localName))Object.defineProperty(W,l,{value:x,configurable:!0});k.processForElements(W),W.disposes=[...N(W,x),...H(W,x)],m={el:W,context:x,indexSignal:bt}}if(m.el===M)M=M.nextSibling;else r?.parentNode?.insertBefore(m.el,M||r);I.set(O,m)}P.forEach((f)=>{f.el.disposes?.forEach((b)=>b()),Mt(f.el,()=>{f.el.remove()})}),P=I})}e.remove()}}var at=Symbol("ready");class lt extends d{#t=this.attachShadow({mode:"open"});#e=new R;get[l](){return this.#e}async mount(){this.#e[A](at,new Promise(async(e,t)=>{try{this.style.display="none";let o=this.getAttribute("name"),i=this.querySelector("template"),r=i.cloneNode(!0).content,a=[];document[l][`$${o}`]=this[l];let c;for(let n of r.querySelectorAll("script")){if(n.setAttribute("type","javascript/blocked"),n.hasAttribute("init"))c=C(this[l],n.textContent);if(n.hasAttribute("watch"))a.push(C(this[l],n.textContent));if(n.parentElement?.tagName!=="PH-METHOD")n.remove()}let s=await ct(r);for(let[n,h]of s)this[l][A](n,h);this.#t.append(r),await c?.(),Object.seal(this[l]);for(let n of a)p(()=>{n()});e(!0)}catch(o){console.error(o),t(o)}}))}}var jt=(e,t)=>{let o=void 0,i=[];e.querySelectorAll("slot").forEach((r)=>{if(r.hasAttribute("name"))i.push(r);else o??=r});for(let r of i){let a=r.getAttribute("name");if(a)t[J](a)}e.onslotchange=()=>{t.slots.default=o?.assignedElements()??[];for(let r of i){let a=r.getAttribute("name");if(a&&t.slots)t.slots[a]=r.assignedElements()}}},_t=(e,t)=>{for(let o of e.querySelectorAll("[ph\\:ref]")){let i=o.getAttribute("ph:ref");if(i)t[A](i,o);o.removeAttribute("ph:ref")}},Bt=(()=>{let e=null;return()=>{if(e===null)e=document.querySelector("style[global]");return e}})(),Kt=(e,t=!1)=>{let o=e.querySelector("style"),i=new CSSStyleSheet,r=new CSSStyleSheet,a=new CSSStyleSheet;if(!o?.hasAttribute("isolated"))i.replaceSync(Bt()?.innerHTML??"");r.replaceSync(`:host { display: ${t?"inline-block":"block"}; ${t?"position: relative":""} }`),a.replaceSync(o?.textContent??""),o?.remove(),e.adoptedStyleSheets.push(i,r,a)},Ut=(e,t)=>{if(!e)throw Error("no tag attribute was provided");if(!t.template)throw Error("no template provided for component "+e);let o=t.template.cloneNode(!0),i=t.attributes??[],r=t.properties??[],a=ct(o.content),c=class extends d{#t;#e=[];#o=()=>{};#i;get[l](){return this.#i}static observedAttributes=i;attributeChangedCallback(s,n,h){let y=V(s);if(this[l]&&n!==h)this[l][y]=h}constructor(){super();let s=t.closedShadowRoot?"closed":"open";this.#t=this.attachShadow({mode:s}),this.#i??=new R,Object.setPrototypeOf(this[l],document[l]),this[l][A]("self",this),this[l][A]("root",this.#t);for(let n of r)if(n){let h=Object.prototype.hasOwnProperty.call(this,n),y=h?Reflect.get(this,n):void 0;if(h&&!Reflect.deleteProperty(this,n))throw TypeError(`cannot initialize component property "${n}"`);this[l][L](n,T(y))}}async mount(){for(let m of i)if(m){let x=V(m);this[l][L](x,T(this.getAttribute(m))),this.#e.push(p(()=>{let U=this[l][x];if(U!==void 0&&U!==null)this.setAttribute(m,U);else this.removeAttribute(m)}))}let s=o.cloneNode(!0).content,n=s.querySelector("script[on-mount]"),h=s.querySelector("script[on-remove]"),y=s.querySelectorAll("script[watch]"),P=n?C(this[l],n.textContent):void 0,F=h?C(this[l],h.textContent):void 0,I=Array.from(y).map((m)=>{let x=C(this[l],m.textContent);return m.remove(),x});this.#o=F,n?.remove(),h?.remove(),Y(s),ut(s),_t(s,this[l]);let M=t.stores?.map((m)=>document[l][`$${m}`][at]);await Promise.all(M??[]);for(let m of t.stores??[])this[l][A](m,document[l][`$${m}`]);let f=await a;for(let[m,x]of f)this[l][A](m,x);let b=this.#t;b.append(s),jt(this.#t,this[l]),k.processForElements(b),await P?.();let O=N(b,this[l]);this.#e.push(...O),Object.seal(this[l]);for(let m of I)this.#e.push(p(()=>{m()}));Kt(b,t.inline)}unmount(){this.#o?.();for(let s of this.#e)s()}};for(let s of r){if(!s)continue;Object.defineProperty(c.prototype,s,{get(){return this[l][s]},set(n){this[l][s]=n},configurable:!0})}g(e,c)},ut=(e)=>{let t=K(e);while(t.nextNode()){let o=t.currentNode;o.innerHTML=G(o.innerHTML)}},qt=(e)=>{if(!e)return;let t={default:void 0,"*":void 0,named:[]},o=/^(?<default>(\w+)\s*,?\s*)?(?<all>(\*\s+as\s+\w+)\s*,?\s*)?(?<named>\{[^}]+\})?$/,i=e.match(o),r=i?.groups;if(t.named=[],r){if(r.default)t.default=r.default.replace(",","").trim();if(r.all)t["*"]=r.all.replace("* as ","").replace(",","").trim();if(r.named){let a=r.named.slice(1,-1),c=a.split(",").map((s)=>s.trim());for(let s of c){let n=s.match(/^(\w+)\s+as\s+(\w+)$/);if(n)t.named.push([n[1],n[2]]);else t.named.push(s)}}}return t},ct=async(e)=>Promise.all(Array.from(e.querySelectorAll("import[src]")).map(async(t)=>{let o=t.getAttribute("src");if(!o)return console.error("Import element is missing src attribute",t),[];let i=URL.parse(o)?.href??URL.parse(o,document.baseURI)?.href;if(!i)return console.error("Failed to resolve import source",o),[];let r=await import(i),a=[],c=qt(t.getAttribute("import"));if(c){if(c.default)a.push([c.default,r.default]);if(c["*"])a.push([c["*"],r]);for(let s of c.named??[])if(typeof s=="string"){let n=r[s];if(n)a.push([s,n]);else console.warn(`Import "${s}" not found in module ${i}`)}else{let[n,h]=s,y=r[n];if(y)a.push([h,y]);else console.warn(`Import "${n}" not found in module ${i}`)}}return t.remove(),a})).then((t)=>t.flat());class ht extends d{mount(){let e=this.querySelector("template");if(e){let t=this.getAttribute("tag"),o=e.getAttribute("attributes")?.split(",")?.map((s)=>s.split(":")[0].trim()),i=e.getAttribute("properties")?.split(",")?.map((s)=>s.split(":")[0].trim()),r=e.hasAttribute("closed"),a=e.hasAttribute("inline"),c=e.getAttribute("use-stores")?.split(",")?.map((s)=>s.trim())??[];if(t&&e)Ut(t,{template:e,attributes:o,properties:i,inline:a,closedShadowRoot:r,stores:c});else throw Error("no template element provided")}this.remove()}}class pt extends d{#t=[];#e;mount(){this.#e=Array.from(this.childNodes),this.style.display="inline flow";let e=this.getAttribute("value"),t=w(this);if(e&&t){let o=v(t,e);this.#t.push(...N(this,t)),this.#t.push(...H(this,t)),this.#t.push(p(()=>{if(o.value===!0)this.append(...this.#e);else this.#e=Array.from(this.childNodes).map((r)=>this.removeChild(r))}))}}unmount(){for(let e of this.#t)e()}}class mt extends d{#t;mount(){this.style.display="inline flow";let e=this.getAttribute("value"),t=w(this);if(e&&t){let o=v(t,e);this.#t=p(()=>{if(o.value)this.style.display="inline flow";else this.style.display="none"})}}unmount(){this.#t?.()}}class dt extends d{#t=[];#e;#o;#i=!1;mount(){this.style.display="inline flow";let e=this.getAttribute("value"),t=w(this);if(e&&t){if(!this.#i){let[o,i]=this.children;this.#e=o,this.#o=i,this.#i=!0}if(this.#t.push(...H(this,t)),this.#e instanceof Element)this.#t.push(...N(this.#e,t)),this.#t.push(...H(this.#e,t));if(this.#o instanceof Element)this.#t.push(...N(this.#o,t)),this.#t.push(...H(this.#o,t));D(()=>{this.innerHTML="";let o=v(t,e),i=!!o.value;if(i){if(this.#e)this.append(this.#e)}else if(this.#o)this.append(this.#o);this.#t.push(p(()=>{let r=!!o.value;if(r===i)return;if(i=r,r){if(this.firstChild&&this.#e)this.firstChild.replaceWith(this.#e);else if(this.#e)this.append(this.#e)}else if(this.firstChild&&this.#o)this.firstChild.replaceWith(this.#o);else if(this.#o)this.append(this.#o)}))})}}unmount(){for(let e of this.#t)e()}}class ft extends d{mount(){let e=this.getAttribute("is"),t=w(this),o=v(t,e);if(e&&t)p(()=>{D(()=>{this.replaceWith(o.value)})})}}class vt extends d{#t;mount(){this.style.display="contents";let e=this.getAttribute("value"),t=w(this);D(()=>{if(e&&t){let o=v(t,e);this.#t=p(()=>{this.textContent=o.value})}})}unmount(){this.#t?.()}}var Rt=(e)=>e.replace(/\/+$/,"")||"/",Vt=(e,t)=>{let o=e.getAttribute("path");if(!o)return;if(o==="*")return{route:e,params:{}};let i=Rt(o).split("/").filter(Boolean),r=Rt(t).split("/").filter(Boolean);if(i.length!==r.length)return;let a={};for(let c=0;c<i.length;c++){let s=i[c],n=r[c];if(s.startsWith(":"))a[s.slice(1)]=decodeURIComponent(n);else if(s!==n)return}return{route:e,params:a}};class yt extends d{mount(){this.style.display="contents",this.render();let e=()=>this.render();window.addEventListener("popstate",e),this.onRemove(()=>window.removeEventListener("popstate",e));let t=(o)=>{let{path:i,replace:r}=o.detail;this.navigate(i,r)};document.addEventListener("ph:navigate",t),this.onRemove(()=>document.removeEventListener("ph:navigate",t)),this.on("click",(o)=>{let i=o,r=i.target,a=r instanceof Element?r.closest("a[href]"):void 0;if(!a||i.defaultPrevented||i.button!==0||i.metaKey||i.ctrlKey||i.shiftKey||i.altKey)return;if(a.target||a.hasAttribute("download"))return;let c=new URL(a.getAttribute("href"),window.location.href);if(c.origin!==window.location.origin)return;o.preventDefault(),this.navigate(`${c.pathname}${c.search}${c.hash}`)})}navigate(e,t=!1){window.history[t?"replaceState":"pushState"]({},"",e),this.render()}render(){let e=Array.from(this.children).filter((i)=>i instanceof HTMLElement&&i.hasAttribute("path")),t=e.map((i)=>Vt(i,window.location.pathname)).find(Boolean);for(let i of e){let r=i===t?.route;i.hidden=!r,i.style.display=r?"":"none"}let o={pathname:window.location.pathname,search:window.location.search,hash:window.location.hash,params:t?.params??{},route:t?.route,push:(i)=>this.navigate(i),replace:(i)=>this.navigate(i,!0),back:()=>window.history.back(),forward:()=>window.history.forward()};if(document[l].router=o,t)this.emit("routechange",{path:window.location.pathname,params:t.params,route:t.route})}}var Ht=(e,t=!1)=>{document.dispatchEvent(new CustomEvent("ph:navigate",{detail:{path:e,replace:t}}))},zt={pathname:window.location.pathname,search:window.location.search,hash:window.location.hash,params:{},push:(e)=>Ht(e),replace:(e)=>Ht(e,!0),back:()=>window.history.back(),forward:()=>window.history.forward()},kt=async()=>{console.group("ph init"),!document[l]&&Object.defineProperty(document,l,{value:new R,writable:!1}),!document[l].router&&document[l][L]("router",T(zt)),g("ph-signal",ot),g("ph-computed",it),g("ph-const",rt),g("ph-method",st),g("ph-store",lt),g("ph-for",k),g("ph-either",dt),g("ph-show",mt),g("ph-if",pt),g("ph-slot",vt),g("ph-router",yt),g("ph-dynamic",ft),g("ph-component",ht);let e=K(document.body);while(e.nextNode()){let t=e.currentNode;z(t)}ut(document.body),N(document.body,document[l]),k.processForElements(document.body),console.groupEnd()};var Ao={init:kt};export{Ao as default,kt as init};
+// src/utils/Base.ts
+class Base extends HTMLElement {
+  #disposes = [];
+  log(...content) {
+    const id = this.id ? ` #${this.id}` : "";
+    const name = this.getAttribute("name") ? ` :${this.getAttribute("name")}` : "";
+    console.log(`[${this.tagName}${name}${id}]`, ...content);
+  }
+  mount() {}
+  unmount() {}
+  connectedCallback() {
+    this.mount();
+  }
+  disconnectedCallback() {
+    this.unmount();
+    this.#disposes?.forEach((d) => d());
+    this.#disposes = [];
+  }
+  on(event, cb) {
+    this.#disposes?.push(() => this.removeEventListener(event, cb));
+    return this.addEventListener(event, cb);
+  }
+  getHost() {
+    const root = this.getRootNode();
+    return root.host ?? root;
+  }
+  emit(event, detail, options) {
+    const ev = !detail ? new Event(event, { composed: options?.composed ?? true, bubbles: options?.bubbles ?? true, cancelable: options?.cancelable ?? false }) : new CustomEvent(event, {
+      detail,
+      composed: options?.composed ?? true,
+      bubbles: options?.bubbles ?? true,
+      cancelable: options?.cancelable ?? false
+    });
+    this.dispatchEvent(ev);
+  }
+  onRemove(fn) {
+    this.#disposes.push(fn);
+  }
+}
+
+// node_modules/@preact/signals-core/dist/signals-core.module.js
+var i = Symbol.for("preact-signals");
+function t() {
+  if (!(s > 1)) {
+    var i, t = false;
+    while (h !== undefined) {
+      var r = h;
+      h = undefined;
+      f++;
+      while (r !== undefined) {
+        var o = r.o;
+        r.o = undefined;
+        r.f &= -3;
+        if (!(8 & r.f) && c(r))
+          try {
+            r.c();
+          } catch (r) {
+            if (!t) {
+              i = r;
+              t = true;
+            }
+          }
+        r = o;
+      }
+    }
+    f = 0;
+    s--;
+    if (t)
+      throw i;
+  } else
+    s--;
+}
+var o = undefined;
+function n(i) {
+  var t = o;
+  o = undefined;
+  try {
+    return i();
+  } finally {
+    o = t;
+  }
+}
+var h = undefined;
+var s = 0;
+var f = 0;
+var v = 0;
+function e(i) {
+  if (o !== undefined) {
+    var t = i.n;
+    if (t === undefined || t.t !== o) {
+      t = { i: 0, S: i, p: o.s, n: undefined, t: o, e: undefined, x: undefined, r: t };
+      if (o.s !== undefined)
+        o.s.n = t;
+      o.s = t;
+      i.n = t;
+      if (32 & o.f)
+        i.S(t);
+      return t;
+    } else if (t.i === -1) {
+      t.i = 0;
+      if (t.n !== undefined) {
+        t.n.p = t.p;
+        if (t.p !== undefined)
+          t.p.n = t.n;
+        t.p = o.s;
+        t.n = undefined;
+        o.s.n = t;
+        o.s = t;
+      }
+      return t;
+    }
+  }
+}
+function u(i, t) {
+  this.v = i;
+  this.i = 0;
+  this.n = undefined;
+  this.t = undefined;
+  this.W = t == null ? undefined : t.watched;
+  this.Z = t == null ? undefined : t.unwatched;
+  this.name = t == null ? undefined : t.name;
+}
+u.prototype.brand = i;
+u.prototype.h = function() {
+  return true;
+};
+u.prototype.S = function(i) {
+  var t = this, r = this.t;
+  if (r !== i && i.e === undefined) {
+    i.x = r;
+    this.t = i;
+    if (r !== undefined)
+      r.e = i;
+    else
+      n(function() {
+        var i;
+        (i = t.W) == null || i.call(t);
+      });
+  }
+};
+u.prototype.U = function(i) {
+  var t = this;
+  if (this.t !== undefined) {
+    var { e: r, x: o } = i;
+    if (r !== undefined) {
+      r.x = o;
+      i.e = undefined;
+    }
+    if (o !== undefined) {
+      o.e = r;
+      i.x = undefined;
+    }
+    if (i === this.t) {
+      this.t = o;
+      if (o === undefined)
+        n(function() {
+          var i;
+          (i = t.Z) == null || i.call(t);
+        });
+    }
+  }
+};
+u.prototype.subscribe = function(i) {
+  var t = this;
+  return E(function() {
+    var r = t.value, n = o;
+    o = undefined;
+    try {
+      i(r);
+    } finally {
+      o = n;
+    }
+  }, { name: "sub" });
+};
+u.prototype.valueOf = function() {
+  return this.value;
+};
+u.prototype.toString = function() {
+  return this.value + "";
+};
+u.prototype.toJSON = function() {
+  return this.value;
+};
+u.prototype.peek = function() {
+  var i = o;
+  o = undefined;
+  try {
+    return this.value;
+  } finally {
+    o = i;
+  }
+};
+Object.defineProperty(u.prototype, "value", { get: function() {
+  var i = e(this);
+  if (i !== undefined)
+    i.i = this.i;
+  return this.v;
+}, set: function(i) {
+  if (i !== this.v) {
+    if (f > 100)
+      throw new Error("Cycle detected");
+    this.v = i;
+    this.i++;
+    v++;
+    s++;
+    try {
+      for (var r = this.t;r !== undefined; r = r.x)
+        r.t.N();
+    } finally {
+      t();
+    }
+  }
+} });
+function d(i, t) {
+  return new u(i, t);
+}
+function c(i) {
+  for (var t = i.s;t !== undefined; t = t.n)
+    if (t.S.i !== t.i || !t.S.h() || t.S.i !== t.i)
+      return true;
+  return false;
+}
+function a(i) {
+  for (var t = i.s;t !== undefined; t = t.n) {
+    var r = t.S.n;
+    if (r !== undefined)
+      t.r = r;
+    t.S.n = t;
+    t.i = -1;
+    if (t.n === undefined) {
+      i.s = t;
+      break;
+    }
+  }
+}
+function l(i) {
+  var t = i.s, r = undefined;
+  while (t !== undefined) {
+    var o = t.p;
+    if (t.i === -1) {
+      t.S.U(t);
+      if (o !== undefined)
+        o.n = t.n;
+      if (t.n !== undefined)
+        t.n.p = o;
+    } else
+      r = t;
+    t.S.n = t.r;
+    if (t.r !== undefined)
+      t.r = undefined;
+    t = o;
+  }
+  i.s = r;
+}
+function y(i, t) {
+  u.call(this, undefined);
+  this.x = i;
+  this.s = undefined;
+  this.g = v - 1;
+  this.f = 4;
+  this.W = t == null ? undefined : t.watched;
+  this.Z = t == null ? undefined : t.unwatched;
+  this.name = t == null ? undefined : t.name;
+}
+y.prototype = new u;
+y.prototype.h = function() {
+  this.f &= -3;
+  if (1 & this.f)
+    return false;
+  if ((36 & this.f) == 32)
+    return true;
+  this.f &= -5;
+  if (this.g === v)
+    return true;
+  this.g = v;
+  this.f |= 1;
+  if (this.i > 0 && !c(this)) {
+    this.f &= -2;
+    return true;
+  }
+  var i = o;
+  try {
+    a(this);
+    o = this;
+    var t = this.x();
+    if (16 & this.f || this.v !== t || this.i === 0) {
+      this.v = t;
+      this.f &= -17;
+      this.i++;
+    }
+  } catch (i) {
+    this.v = i;
+    this.f |= 16;
+    this.i++;
+  }
+  o = i;
+  l(this);
+  this.f &= -2;
+  return true;
+};
+y.prototype.S = function(i) {
+  if (this.t === undefined) {
+    this.f |= 36;
+    for (var t = this.s;t !== undefined; t = t.n)
+      t.S.S(t);
+  }
+  u.prototype.S.call(this, i);
+};
+y.prototype.U = function(i) {
+  if (this.t !== undefined) {
+    u.prototype.U.call(this, i);
+    if (this.t === undefined) {
+      this.f &= -33;
+      for (var t = this.s;t !== undefined; t = t.n)
+        t.S.U(t);
+    }
+  }
+};
+y.prototype.N = function() {
+  if (!(2 & this.f)) {
+    this.f |= 6;
+    for (var i = this.t;i !== undefined; i = i.x)
+      i.t.N();
+  }
+};
+Object.defineProperty(y.prototype, "value", { get: function() {
+  if (1 & this.f)
+    throw new Error("Cycle detected");
+  var i = e(this);
+  this.h();
+  if (i !== undefined)
+    i.i = this.i;
+  if (16 & this.f)
+    throw this.v;
+  return this.v;
+} });
+function w(i, t) {
+  return new y(i, t);
+}
+function _(i) {
+  var r = i.u;
+  i.u = undefined;
+  if (typeof r == "function") {
+    s++;
+    var n = o;
+    o = undefined;
+    try {
+      r();
+    } catch (t) {
+      i.f &= -2;
+      i.f |= 8;
+      b(i);
+      throw t;
+    } finally {
+      o = n;
+      t();
+    }
+  }
+}
+function b(i) {
+  for (var t = i.s;t !== undefined; t = t.n)
+    t.S.U(t);
+  i.x = undefined;
+  i.s = undefined;
+  _(i);
+}
+function g(i) {
+  if (o !== this)
+    throw new Error("Out-of-order effect");
+  l(this);
+  o = i;
+  this.f &= -2;
+  if (8 & this.f)
+    b(this);
+  t();
+}
+function p(i, t) {
+  this.x = i;
+  this.u = undefined;
+  this.s = undefined;
+  this.o = undefined;
+  this.f = 32;
+  this.name = t == null ? undefined : t.name;
+}
+p.prototype.c = function() {
+  var i = this.S();
+  try {
+    if (8 & this.f)
+      return;
+    if (this.x === undefined)
+      return;
+    var t = this.x();
+    if (typeof t == "function")
+      this.u = t;
+  } finally {
+    i();
+  }
+};
+p.prototype.S = function() {
+  if (1 & this.f)
+    throw new Error("Cycle detected");
+  this.f |= 1;
+  this.f &= -9;
+  _(this);
+  a(this);
+  s++;
+  var i = o;
+  o = this;
+  return g.bind(this, i);
+};
+p.prototype.N = function() {
+  if (!(2 & this.f)) {
+    this.f |= 2;
+    this.o = h;
+    h = this;
+  }
+};
+p.prototype.d = function() {
+  this.f |= 8;
+  if (!(1 & this.f))
+    b(this);
+};
+p.prototype.dispose = function() {
+  this.d();
+};
+function E(i, t) {
+  var r = new p(i, t);
+  try {
+    r.c();
+  } catch (i) {
+    r.d();
+    throw i;
+  }
+  var o = r.d.bind(r);
+  o[Symbol.dispose] = o;
+  return o;
+}
+
+// src/utils/Utils.ts
+var replaceHandlebars = (input, fn) => input.replace(/{{[^{}]*}}/g, (result) => fn(result.replace(/[{}]/g, "")));
+var TW = document.createTreeWalker.bind(document);
+var defineComponent = (tag, spec) => !customElements.get(tag) && customElements.define(tag, spec);
+var toCamelCase = (name) => name.replace(/-[a-z]/g, (m) => m[1].toUpperCase());
+var phSlotSyntax = (input, replaceContent) => {
+  return replaceHandlebars(input, (m) => {
+    let content = m.replace(/[{}]/g, " ");
+    if (replaceContent)
+      content = replaceContent(content);
+    return `<ph-slot value="${content}"></ph-slot>`;
+  });
+};
+var createContextComputed = (context, statement) => {
+  const body = statement;
+  return Function("context", "computed", `with(context){return computed(() => ${body})}`)(context, w);
+};
+var createContextMethod = (context, statement, parameterList = "") => {
+  const body = statement ?? "";
+  const isAsync = statement?.includes("await");
+  return Function("context", `return ${isAsync ? "async" : ""} function(${parameterList}){with (context) {${body}}}`)(context);
+};
+var noTemplateTreeWalker = (root) => {
+  return TW(root, NodeFilter.SHOW_ELEMENT, (node) => node.nodeType === Node.ELEMENT_NODE && node.tagName !== "TEMPLATE" ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT);
+};
+var allElementsTreeWalker = (root, filter) => {
+  return TW(root, NodeFilter.SHOW_ELEMENT, filter);
+};
+var delayProcessing = (callback) => {
+  queueMicrotask(callback);
+};
+var executeDeferredUnmount = (element, onRemove) => {
+  if (!(element instanceof HTMLElement)) {
+    onRemove();
+    return;
+  }
+  let isDeferred = false;
+  const event = new CustomEvent("beforeremove", {
+    detail: {
+      defer: (promise) => {
+        isDeferred = true;
+        promise.then(onRemove);
+      }
+    },
+    cancelable: true
+  });
+  element.dispatchEvent(event);
+  if (isDeferred)
+    return;
+  const leaveClass = element.getAttribute("ph-leave-class");
+  if (leaveClass) {
+    element.classList.add(...leaveClass.split(" "));
+  }
+  const animations = element.getAnimations?.() || [];
+  if (animations.length > 0) {
+    Promise.all(animations.map((a) => a.finished)).then(onRemove).catch(onRemove);
+  } else {
+    onRemove();
+  }
+};
+
+// src/elements/declarations/Context.ts
+var getTypedValue = ({ value, context }) => {
+  try {
+    return createContextMethod(context, `return ${value}`)();
+  } catch (error) {
+    console.error(error);
+  }
+};
+var getAttributes = (element) => {
+  const context = resolveContext(element), name = element.getAttribute("name"), value = element.getAttribute("value");
+  return { context, name, value };
+};
+var CONTEXT = Symbol();
+var ADD_SIGNAL = Symbol();
+var ADD_COMPUTED = Symbol();
+var ADD_METHOD = Symbol();
+var ADD_CONST = Symbol();
+var ADD_SLOT = Symbol();
+var resolveContext = (node) => {
+  let current = node;
+  while (current && current !== document) {
+    if (current[CONTEXT])
+      return current[CONTEXT];
+    if (current instanceof ShadowRoot)
+      current = current.host;
+    else
+      current = current.parentNode;
+  }
+  return document[CONTEXT];
+};
+
+class Context {
+  slots = {};
+  constructor() {
+    this[ADD_SLOT]("default");
+  }
+  [ADD_SLOT](name) {
+    const s = d([]);
+    Object.defineProperty(this.slots, name, {
+      get() {
+        return s.value;
+      },
+      set(v) {
+        s.value = v;
+      }
+    });
+  }
+  [ADD_SIGNAL](name, s) {
+    Object.defineProperty(this, name, {
+      get() {
+        return s.value;
+      },
+      set(v) {
+        s.value = v;
+      }
+    });
+  }
+  [ADD_COMPUTED](name, c) {
+    Object.defineProperty(this, name, {
+      get() {
+        return c.value;
+      }
+    });
+  }
+  [ADD_METHOD](name, m) {
+    Object.defineProperty(this, name, {
+      value: m
+    });
+  }
+  [ADD_CONST](name, v) {
+    Object.defineProperty(this, name, { value: v, writable: false });
+  }
+}
+
+class PhSignal extends Base {
+  #handleLocalStorage(localStorageAttribute, name, context) {
+    if (localStorageAttribute !== null) {
+      const localStoragePrefix = localStorageAttribute ? localStorageAttribute + "/" : "", key = localStoragePrefix + name, localStorageValue = localStorage.getItem(key);
+      if (localStorageValue)
+        context[name] = JSON.parse(localStorageValue);
+      E(() => {
+        localStorage.setItem(key, JSON.stringify(context[name]));
+      });
+    }
+  }
+  mount() {
+    const { name, value, context } = getAttributes(this);
+    if (name && value && context) {
+      const typedValue = getTypedValue({ value, context }), localStorageAttribute = this.getAttribute("local-storage");
+      context[ADD_SIGNAL](name, d(typedValue));
+      if (localStorageAttribute !== null)
+        this.#handleLocalStorage(localStorageAttribute, name, context);
+    }
+    this.remove();
+  }
+}
+
+class PhComputed extends Base {
+  mount() {
+    const { name, value, context } = getAttributes(this);
+    if (name && value && context) {
+      const typedValue = createContextComputed(context, value);
+      context[ADD_COMPUTED](name, typedValue);
+    }
+    this.remove();
+  }
+}
+
+class PhConst extends Base {
+  mount() {
+    const { name, value, context } = getAttributes(this);
+    if (name && value && context) {
+      const typedValue = getTypedValue({ value, context });
+      context[ADD_CONST](name, typedValue);
+    }
+    this.remove();
+  }
+}
+
+class PhMethod extends Base {
+  mount() {
+    this.style.display = "none";
+    const { context, name } = getAttributes(this), scriptElement = this.querySelector("script"), body = scriptElement?.textContent.trim() ?? "", args = scriptElement?.getAttribute("args")?.split(",")?.map((arg) => {
+      const [argName, argType] = arg.split(":").map((a) => a.trim());
+      return { name: argName, type: argType };
+    }), joined = args?.map((arg) => arg.name).join(",");
+    if (name && context && body) {
+      const method = createContextMethod(context, body, joined);
+      context[ADD_METHOD](name, method);
+    } else {
+      if (!context)
+        this.log("no context provided!");
+      if (!body)
+        this.log("no body provided!");
+    }
+    this.remove();
+  }
+}
+
+// src/utils/Attributes.ts
+var Directives = {
+  "bind:": "bind:",
+  "bool:": "bool:",
+  "on:": "on:",
+  "prop:": "prop:",
+  "ph:": "ph:"
+};
+var AttributeMapping = {
+  "@": (name) => name.replace("@", Directives["on:"]),
+  ".": (name) => name.replace(".", Directives["prop:"]),
+  "?": (name) => name.replace("?", Directives["bool:"]),
+  ":": (name) => name.replace(":", Directives["bind:"]),
+  "*": (name) => name.replace("*", Directives["ph:"])
+};
+var modifiers = {
+  ctrl: () => (e) => e.ctrlKey,
+  shift: () => (e) => e.shiftKey,
+  alt: () => (e) => e.altKey,
+  meta: () => (e) => e.metaKey,
+  enter: () => (e) => e.key === "Enter",
+  escape: () => (e) => e.key === "Escape",
+  throttle: (delay) => {
+    let lastCall = 0;
+    return () => {
+      const now = Date.now();
+      if (now - lastCall >= delay) {
+        lastCall = now;
+        return true;
+      }
+    };
+  },
+  debounce: (delay) => {
+    let timeout;
+    return (callback) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        callback();
+      }, delay);
+    };
+  }
+};
+var renameShortcutAttributesInTemplate = (template) => {
+  const tw = allElementsTreeWalker(template);
+  while (tw.nextNode()) {
+    renameShortcutAttributes(tw.currentNode);
+  }
+};
+var processAttributesForChildrenElements = (root, context) => {
+  const disposes = [], tw = noTemplateTreeWalker(root);
+  while (tw.nextNode()) {
+    const element = tw.currentNode;
+    disposes.push(...processAttributes(element, context));
+  }
+  return disposes;
+};
+var renameShortcutAttributes = (element) => {
+  for (const attributeName of element.getAttributeNames()) {
+    const name = attributeName, replacedAttributeName = AttributeMapping[name[0]]?.(name), value = element.getAttribute(name);
+    if (replacedAttributeName && value) {
+      element.setAttribute(replacedAttributeName, value);
+      element.removeAttribute(name);
+    }
+  }
+};
+var processAttributes = (element, context) => {
+  const disposes = [], attributeNames = element.getAttributeNames();
+  for (const attributeName of attributeNames) {
+    const attributeValue = element.getAttribute(attributeName), attributeExists = attributeValue && attributeValue !== "";
+    if (attributeExists) {
+      if (attributeName.startsWith(Directives["on:"])) {
+        const [eventName, ...mods] = attributeName.replace(Directives["on:"], "").split("."), modFilters = [], eventOptions = {}, eventListener = createContextMethod(context, attributeValue, "$e");
+        let shouldPreventDefault = false, shouldStopPropagation = false, debounceFn;
+        mods.forEach((mod) => {
+          const [name, ...args] = mod.split(":");
+          switch (name) {
+            case "once":
+              eventOptions.once = true;
+              break;
+            case "passive":
+              eventOptions.passive = true;
+              break;
+            case "capture":
+              eventOptions.capture = true;
+              break;
+            case "prevent":
+              shouldPreventDefault = true;
+              break;
+            case "stop":
+              shouldStopPropagation = true;
+              break;
+            case "debounce":
+              debounceFn = modifiers.debounce(Number(args[0]));
+              break;
+            default:
+              if (modifiers[name])
+                modFilters.push(modifiers[name]?.(...args));
+          }
+        });
+        delayProcessing(() => {
+          element.addEventListener(eventName, (e) => {
+            if (shouldPreventDefault)
+              e.preventDefault();
+            if (shouldStopPropagation)
+              e.stopPropagation();
+            if (modFilters.every((m) => m(e))) {
+              if (debounceFn)
+                debounceFn(() => eventListener(e));
+              else
+                eventListener(e);
+            }
+          }, eventOptions);
+        });
+        element.removeAttribute(attributeName);
+      }
+      if (attributeName.startsWith(Directives["bind:"])) {
+        const computed = createContextComputed(context, attributeValue), name = attributeName.replace(Directives["bind:"], "");
+        disposes.push(E(() => {
+          if (computed.value !== undefined && computed.value !== null)
+            element.setAttribute(name, computed.value);
+          else
+            element.removeAttribute(name);
+        }));
+        element.removeAttribute(attributeName);
+      }
+      if (attributeName.startsWith(Directives["prop:"])) {
+        const name = toCamelCase(attributeName.replace(Directives["prop:"], "")), computed = createContextComputed(context, attributeValue);
+        disposes.push(E(() => {
+          const target = element[CONTEXT] ?? element;
+          if (target[name] !== computed.value)
+            target[name] = computed.value;
+        }));
+        element.removeAttribute(attributeName);
+      }
+      if (attributeName.startsWith(Directives["bool:"])) {
+        const name = attributeName.replace(Directives["bool:"], ""), computed = createContextComputed(context, attributeValue);
+        disposes.push(E(() => {
+          if (computed.value)
+            element.toggleAttribute(name, true);
+          else
+            element.toggleAttribute(name, false);
+        }));
+        element.removeAttribute(attributeName);
+      }
+      if (attributeName.startsWith(Directives["ph:"])) {
+        const name = attributeName.replace(Directives["ph:"], "");
+        if (name === "if") {
+          delayProcessing(() => {
+            const computed = createContextComputed(context, attributeValue), comment = document.createComment("ph-if");
+            element.before(comment);
+            disposes.push(E(() => {
+              if (computed.value)
+                comment.after(element);
+              else
+                element.remove();
+            }));
+          });
+        } else if (name === "show") {
+          const computed = createContextComputed(context, attributeValue), displayValue = element.style.display;
+          disposes.push(E(() => {
+            if (computed.value)
+              element.style.display = displayValue;
+            else
+              element.style.display = "none";
+          }));
+        } else if (name !== "each" && name !== "key")
+          element.removeAttribute(attributeName);
+        if (name === "if" || name === "show")
+          element.removeAttribute(attributeName);
+      }
+    }
+  }
+  return disposes;
+};
+
+// src/elements/control-flow/For.ts
+var createElement = (content) => {
+  const el = content.cloneNode(true);
+  el.innerHTML = phSlotSyntax(el.innerHTML);
+  return el;
+};
+
+class PhFor extends Base {
+  static processForElements(root) {
+    for (const template of root.querySelectorAll("template[ph\\:each]")) {
+      PhFor.fromTemplate(template);
+    }
+  }
+  mount() {
+    this.style.display = "contents";
+    renameShortcutAttributes(this);
+    const templateElement = this.firstElementChild, phEach = this.getAttribute("ph:each"), phKey = this.getAttribute("ph:key");
+    if (templateElement?.tagName === "TEMPLATE") {
+      if (phEach) {
+        templateElement.setAttribute("ph:each", phEach);
+        this.removeAttribute("ph:each");
+      }
+      if (phKey) {
+        templateElement.setAttribute("ph:key", phKey);
+        this.removeAttribute("ph:key");
+      }
+      PhFor.fromTemplate(templateElement);
+    } else {
+      throw Error("no template element provided");
+    }
+  }
+  static fromTemplate(template) {
+    renameShortcutAttributesInTemplate(template.content);
+    template.before(document.createComment("ph-for begin"));
+    template.after(document.createComment("ph-for end"));
+    const eachAttribute = template.getAttribute("ph:each"), keyAttribute = template.getAttribute("ph:key"), { previousSibling: beginComment, nextSibling: endComment } = template, context = resolveContext(template), [definition, collection] = eachAttribute?.split(" in ") ?? [], [itemName, indexName] = definition.split(",").map((it) => it.trim());
+    if (context && itemName && collection && template) {
+      const computed = createContextComputed(context, collection);
+      let renderedNodes = new Map;
+      E(() => {
+        const currentArray = computed.value || [], newRenderedNodes = new Map;
+        let currentDomNode = beginComment?.nextSibling;
+        for (let index = 0;index < currentArray.length; index++) {
+          const item = currentArray[index], keyValue = (keyAttribute ? item[keyAttribute] : index) ?? index;
+          let nodeData = renderedNodes.get(keyValue);
+          if (nodeData) {
+            nodeData.indexSignal.value = index;
+            nodeData.context[itemName] = item;
+            renderedNodes.delete(keyValue);
+          } else {
+            const childContext = new Context, content = template.content.firstElementChild, createdElement = createElement(content), idxSignal = d(index);
+            Object.setPrototypeOf(childContext, context);
+            childContext[ADD_SIGNAL](itemName, d(item));
+            if (indexName)
+              childContext[ADD_SIGNAL](indexName, idxSignal);
+            if (!customElements.get(createdElement.localName)) {
+              Object.defineProperty(createdElement, CONTEXT, { value: childContext, configurable: true });
+            }
+            PhFor.processForElements(createdElement);
+            createdElement.disposes = [
+              ...processAttributesForChildrenElements(createdElement, childContext),
+              ...processAttributes(createdElement, childContext)
+            ];
+            nodeData = { el: createdElement, context: childContext, indexSignal: idxSignal };
+          }
+          if (nodeData.el === currentDomNode) {
+            currentDomNode = currentDomNode.nextSibling;
+          } else {
+            endComment?.parentNode?.insertBefore(nodeData.el, currentDomNode || endComment);
+          }
+          newRenderedNodes.set(keyValue, nodeData);
+        }
+        renderedNodes.forEach((nodeData) => {
+          nodeData.el.disposes?.forEach((d) => d());
+          executeDeferredUnmount(nodeData.el, () => {
+            nodeData.el.remove();
+          });
+        });
+        renderedNodes = newRenderedNodes;
+      });
+    }
+    template.remove();
+  }
+}
+
+// src/elements/declarations/Store.ts
+var READY = Symbol("ready");
+
+class PhStore extends Base {
+  #shadowroot = this.attachShadow({ mode: "open" });
+  #context = new Context;
+  get [CONTEXT]() {
+    return this.#context;
+  }
+  async mount() {
+    this.#context[ADD_CONST](READY, new Promise(async (resolve, reject) => {
+      try {
+        this.style.display = "none";
+        const name = this.getAttribute("name"), template = this.querySelector("template"), clonedTemplate = template.cloneNode(true).content, watcher = [];
+        document[CONTEXT][`$${name}`] = this[CONTEXT];
+        let initFn;
+        for (const script of clonedTemplate.querySelectorAll("script")) {
+          script.setAttribute("type", "javascript/blocked");
+          if (script.hasAttribute("init"))
+            initFn = createContextMethod(this[CONTEXT], script.textContent);
+          if (script.hasAttribute("watch"))
+            watcher.push(createContextMethod(this[CONTEXT], script.textContent));
+          if (script.parentElement?.tagName !== "PH-METHOD")
+            script.remove();
+        }
+        const imports = await processImports(clonedTemplate);
+        for (const [key, value] of imports) {
+          this[CONTEXT][ADD_CONST](key, value);
+        }
+        this.#shadowroot.append(clonedTemplate);
+        await initFn?.();
+        Object.seal(this[CONTEXT]);
+        for (const fn of watcher) {
+          E(() => {
+            fn();
+          });
+        }
+        resolve(true);
+      } catch (error) {
+        console.error(error);
+        reject(error);
+      }
+    }));
+  }
+}
+
+// src/elements/declarations/Component.ts
+var processSlots = (root, context) => {
+  let defaultSlot = undefined, namedSlots = [];
+  root.querySelectorAll("slot").forEach((s) => {
+    if (s.hasAttribute("name"))
+      namedSlots.push(s);
+    else
+      defaultSlot ??= s;
+  });
+  for (const slot of namedSlots) {
+    const name = slot.getAttribute("name");
+    if (name)
+      context[ADD_SLOT](name);
+  }
+  root.onslotchange = () => {
+    context.slots.default = defaultSlot?.assignedElements() ?? [];
+    for (const slot of namedSlots) {
+      const name = slot.getAttribute("name");
+      if (name && context.slots)
+        context.slots[name] = slot.assignedElements();
+    }
+  };
+};
+var processRefs = (root, context) => {
+  for (const element of root.querySelectorAll("[ph\\:ref]")) {
+    const name = element.getAttribute("ph:ref");
+    if (name)
+      context[ADD_CONST](name, element);
+    element.removeAttribute("ph:ref");
+  }
+};
+var memoizedGlobalStylesheet = (() => {
+  let cachedValue = null;
+  return () => {
+    if (cachedValue === null) {
+      cachedValue = document.querySelector("style[global]");
+    }
+    return cachedValue;
+  };
+})();
+var createStyles = (root, isInline = false) => {
+  const styleElement = root.querySelector("style"), globalStyle = new CSSStyleSheet, baseStyle = new CSSStyleSheet, customStyle = new CSSStyleSheet;
+  if (!styleElement?.hasAttribute("isolated")) {
+    globalStyle.replaceSync(memoizedGlobalStylesheet()?.innerHTML ?? "");
+  }
+  baseStyle.replaceSync(`:host { display: ${isInline ? "inline-block" : "block"}; ${isInline ? "position: relative" : ""} }`);
+  customStyle.replaceSync(styleElement?.textContent ?? "");
+  styleElement?.remove();
+  root.adoptedStyleSheets.push(globalStyle, baseStyle, customStyle);
+};
+var constructCustomElement = (tag, spec) => {
+  if (!tag)
+    throw Error("no tag attribute was provided");
+  if (!spec.template)
+    throw Error("no template provided for component " + tag);
+  const template = spec.template.cloneNode(true), observedAttributes = spec.attributes ?? [], observedProperties = spec.properties ?? [], importPromises = processImports(template.content);
+  const ComponentClass = class extends Base {
+    #shadowRoot;
+    #disposes = [];
+    #onRemoveFn = () => {};
+    #context;
+    get [CONTEXT]() {
+      return this.#context;
+    }
+    static observedAttributes = observedAttributes;
+    attributeChangedCallback(name, oldV, newV) {
+      const camelCased = toCamelCase(name);
+      if (this[CONTEXT] && oldV !== newV) {
+        this[CONTEXT][camelCased] = newV;
+      }
+    }
+    constructor() {
+      super();
+      const mode = spec.closedShadowRoot ? "closed" : "open";
+      this.#shadowRoot = this.attachShadow({ mode });
+      this.#context ??= new Context;
+      Object.setPrototypeOf(this[CONTEXT], document[CONTEXT]);
+      this[CONTEXT][ADD_CONST]("self", this);
+      this[CONTEXT][ADD_CONST]("root", this.#shadowRoot);
+      for (const property of observedProperties) {
+        if (property) {
+          const hasInitialValue = Object.prototype.hasOwnProperty.call(this, property), initialValue = hasInitialValue ? Reflect.get(this, property) : undefined;
+          if (hasInitialValue && !Reflect.deleteProperty(this, property)) {
+            throw new TypeError(`cannot initialize component property "${property}"`);
+          }
+          this[CONTEXT][ADD_SIGNAL](property, d(initialValue));
+        }
+      }
+    }
+    async mount() {
+      for (const attribute of observedAttributes) {
+        if (attribute) {
+          const camelCased = toCamelCase(attribute);
+          this[CONTEXT][ADD_SIGNAL](camelCased, d(this.getAttribute(attribute)));
+          this.#disposes.push(E(() => {
+            const value = this[CONTEXT][camelCased];
+            if (value !== undefined && value !== null)
+              this.setAttribute(attribute, value);
+            else
+              this.removeAttribute(attribute);
+          }));
+        }
+      }
+      const clonedTemplate = template.cloneNode(true).content, onMountElement = clonedTemplate.querySelector("script[on-mount]"), onRemoveElement = clonedTemplate.querySelector("script[on-remove]"), watchElements = clonedTemplate.querySelectorAll("script[watch]"), onMountFunction = onMountElement ? createContextMethod(this[CONTEXT], onMountElement.textContent) : undefined, onRemoveFunction = onRemoveElement ? createContextMethod(this[CONTEXT], onRemoveElement.textContent) : undefined, watcherFunctions = Array.from(watchElements).map((watchElement) => {
+        const watchFn = createContextMethod(this[CONTEXT], watchElement.textContent);
+        watchElement.remove();
+        return watchFn;
+      });
+      this.#onRemoveFn = onRemoveFunction;
+      onMountElement?.remove();
+      onRemoveElement?.remove();
+      renameShortcutAttributesInTemplate(clonedTemplate);
+      processTemplateSyntax(clonedTemplate);
+      processRefs(clonedTemplate, this[CONTEXT]);
+      const storePromises = spec.stores?.map((store) => document[CONTEXT][`$${store}`][READY]);
+      await Promise.all(storePromises ?? []);
+      for (const store of spec.stores ?? []) {
+        this[CONTEXT][ADD_CONST](store, document[CONTEXT][`$${store}`]);
+      }
+      const allImports = await importPromises;
+      for (const [key, value] of allImports) {
+        this[CONTEXT][ADD_CONST](key, value);
+      }
+      const root = this.#shadowRoot;
+      root.append(clonedTemplate);
+      processSlots(this.#shadowRoot, this[CONTEXT]);
+      PhFor.processForElements(root);
+      await onMountFunction?.();
+      const childrenDisposes = processAttributesForChildrenElements(root, this[CONTEXT]);
+      this.#disposes.push(...childrenDisposes);
+      Object.seal(this[CONTEXT]);
+      for (const fn of watcherFunctions) {
+        this.#disposes.push(E(() => {
+          fn();
+        }));
+      }
+      createStyles(root, spec.inline);
+    }
+    unmount() {
+      this.#onRemoveFn?.();
+      for (const d of this.#disposes) {
+        d();
+      }
+    }
+  };
+  for (const property of observedProperties) {
+    if (!property)
+      continue;
+    Object.defineProperty(ComponentClass.prototype, property, {
+      get() {
+        return this[CONTEXT][property];
+      },
+      set(value) {
+        this[CONTEXT][property] = value;
+      },
+      configurable: true
+    });
+  }
+  defineComponent(tag, ComponentClass);
+};
+var processTemplateSyntax = (root) => {
+  const tw = noTemplateTreeWalker(root);
+  while (tw.nextNode()) {
+    const element = tw.currentNode;
+    element.innerHTML = phSlotSyntax(element.innerHTML);
+  }
+};
+var parseImportAttribute = (importAttr) => {
+  if (!importAttr)
+    return;
+  const result = {
+    default: undefined,
+    "*": undefined,
+    named: []
+  }, regular = /^(?<default>(\w+)\s*,?\s*)?(?<all>(\*\s+as\s+\w+)\s*,?\s*)?(?<named>\{[^}]+\})?$/, match = importAttr.match(regular), matchedGroups = match?.groups;
+  result.named = [];
+  if (matchedGroups) {
+    if (matchedGroups["default"])
+      result.default = matchedGroups["default"].replace(",", "").trim();
+    if (matchedGroups["all"])
+      result["*"] = matchedGroups["all"].replace("* as ", "").replace(",", "").trim();
+    if (matchedGroups["named"]) {
+      const namedContent = matchedGroups["named"].slice(1, -1), namedParts = namedContent.split(",").map((s) => s.trim());
+      for (const entry of namedParts) {
+        const asMatch = entry.match(/^(\w+)\s+as\s+(\w+)$/);
+        if (asMatch) {
+          result.named.push([asMatch[1], asMatch[2]]);
+        } else {
+          result.named.push(entry);
+        }
+      }
+    }
+  }
+  return result;
+};
+var processImports = async (element) => {
+  return Promise.all(Array.from(element.querySelectorAll("import[src]")).map(async (lib) => {
+    const source = lib.getAttribute("src");
+    if (!source) {
+      console.error("Import element is missing src attribute", lib);
+      return [];
+    }
+    const src = URL.parse(source)?.href ?? URL.parse(source, document.baseURI)?.href;
+    if (!src) {
+      console.error("Failed to resolve import source", source);
+      return [];
+    }
+    const importedModule = await import(src), addToContext = [], imports = parseImportAttribute(lib.getAttribute("import"));
+    if (imports) {
+      if (imports.default)
+        addToContext.push([imports.default, importedModule.default]);
+      if (imports["*"])
+        addToContext.push([imports["*"], importedModule]);
+      for (const named of imports.named ?? []) {
+        if (typeof named == "string") {
+          const part = importedModule[named];
+          if (part)
+            addToContext.push([named, part]);
+          else
+            console.warn(`Import "${named}" not found in module ${src}`);
+        } else {
+          const [originalName, asName] = named, part = importedModule[originalName];
+          if (part)
+            addToContext.push([asName, part]);
+          else
+            console.warn(`Import "${originalName}" not found in module ${src}`);
+        }
+      }
+    }
+    lib.remove();
+    return addToContext;
+  })).then((allImports) => allImports.flat());
+};
+
+class PhComponent extends Base {
+  mount() {
+    const template = this.querySelector("template");
+    if (template) {
+      const tag = this.getAttribute("tag"), attributes = template.getAttribute("attributes")?.split(",")?.map((attribute) => attribute.split(":")[0].trim()), properties = template.getAttribute("properties")?.split(",")?.map((property) => property.split(":")[0].trim()), closedShadowRoot = template.hasAttribute("closed"), inline = template.hasAttribute("inline"), stores = template.getAttribute("use-stores")?.split(",")?.map((s) => s.trim()) ?? [];
+      if (tag && template)
+        constructCustomElement(tag, { template, attributes, properties, inline, closedShadowRoot, stores });
+      else
+        throw Error("no template element provided");
+    }
+    this.remove();
+  }
+}
+
+// src/elements/control-flow/If.ts
+class PhIf extends Base {
+  #disposes = [];
+  #children;
+  mount() {
+    this.#children = Array.from(this.childNodes);
+    this.style.display = "inline flow";
+    const value = this.getAttribute("value"), context = resolveContext(this);
+    if (value && context) {
+      const computed = createContextComputed(context, value);
+      this.#disposes.push(...processAttributesForChildrenElements(this, context));
+      this.#disposes.push(...processAttributes(this, context));
+      this.#disposes.push(E(() => {
+        const v = computed.value;
+        if (v === true)
+          this.append(...this.#children);
+        else
+          this.#children = Array.from(this.childNodes).map((e) => this.removeChild(e));
+      }));
+    }
+  }
+  unmount() {
+    for (const dispose of this.#disposes) {
+      dispose();
+    }
+  }
+}
+
+// src/elements/control-flow/Show.ts
+class PhShow extends Base {
+  #dispose;
+  mount() {
+    this.style.display = "inline flow";
+    const value = this.getAttribute("value"), context = resolveContext(this);
+    if (value && context) {
+      const val = createContextComputed(context, value);
+      this.#dispose = E(() => {
+        if (val.value) {
+          this.style.display = "inline flow";
+        } else {
+          this.style.display = "none";
+        }
+      });
+    }
+  }
+  unmount() {
+    this.#dispose?.();
+  }
+}
+
+// src/elements/control-flow/Either.ts
+class PhEither extends Base {
+  #disposes = [];
+  #trueChild;
+  #falseChild;
+  #initialized = false;
+  mount() {
+    this.style.display = "inline flow";
+    const value = this.getAttribute("value"), context = resolveContext(this);
+    if (value && context) {
+      if (!this.#initialized) {
+        const [True, False] = this.children;
+        this.#trueChild = True;
+        this.#falseChild = False;
+        this.#initialized = true;
+      }
+      this.#disposes.push(...processAttributes(this, context));
+      if (this.#trueChild instanceof Element) {
+        this.#disposes.push(...processAttributesForChildrenElements(this.#trueChild, context));
+        this.#disposes.push(...processAttributes(this.#trueChild, context));
+      }
+      if (this.#falseChild instanceof Element) {
+        this.#disposes.push(...processAttributesForChildrenElements(this.#falseChild, context));
+        this.#disposes.push(...processAttributes(this.#falseChild, context));
+      }
+      delayProcessing(() => {
+        this.innerHTML = "";
+        const computed = createContextComputed(context, value);
+        let lastState = !!computed.value;
+        if (lastState) {
+          if (this.#trueChild)
+            this.append(this.#trueChild);
+        } else {
+          if (this.#falseChild)
+            this.append(this.#falseChild);
+        }
+        this.#disposes.push(E(() => {
+          const currentState = !!computed.value;
+          if (currentState === lastState)
+            return;
+          lastState = currentState;
+          if (currentState) {
+            if (this.firstChild && this.#trueChild) {
+              this.firstChild.replaceWith(this.#trueChild);
+            } else if (this.#trueChild) {
+              this.append(this.#trueChild);
+            }
+          } else {
+            if (this.firstChild && this.#falseChild) {
+              this.firstChild.replaceWith(this.#falseChild);
+            } else if (this.#falseChild) {
+              this.append(this.#falseChild);
+            }
+          }
+        }));
+      });
+    }
+  }
+  unmount() {
+    for (const dispose of this.#disposes) {
+      dispose();
+    }
+  }
+}
+
+// src/elements/Dynamic.ts
+class PhDynamic extends Base {
+  mount() {
+    const is = this.getAttribute("is"), context = resolveContext(this), computed = createContextComputed(context, is);
+    if (is && context) {
+      E(() => {
+        delayProcessing(() => {
+          this.replaceWith(computed.value);
+        });
+      });
+    }
+  }
+}
+
+// src/elements/Slot.ts
+class PhSlot extends Base {
+  #dispose;
+  mount() {
+    this.style.display = "contents";
+    const value = this.getAttribute("value"), context = resolveContext(this);
+    delayProcessing(() => {
+      if (value && context) {
+        const computed = createContextComputed(context, value);
+        this.#dispose = E(() => {
+          this.textContent = computed.value;
+        });
+      }
+    });
+  }
+  unmount() {
+    this.#dispose?.();
+  }
+}
+
+// src/elements/Router.ts
+var normalizePath = (path) => {
+  const normalized = path.replace(/\/+$/, "");
+  return normalized || "/";
+};
+var matchRoute = (route, pathname) => {
+  const path = route.getAttribute("path");
+  if (!path)
+    return;
+  if (path === "*")
+    return { route, params: {} };
+  const routeSegments = normalizePath(path).split("/").filter(Boolean);
+  const pathSegments = normalizePath(pathname).split("/").filter(Boolean);
+  if (routeSegments.length !== pathSegments.length)
+    return;
+  const params = {};
+  for (let index = 0;index < routeSegments.length; index++) {
+    const routeSegment = routeSegments[index];
+    const pathSegment = pathSegments[index];
+    if (routeSegment.startsWith(":")) {
+      params[routeSegment.slice(1)] = decodeURIComponent(pathSegment);
+    } else if (routeSegment !== pathSegment) {
+      return;
+    }
+  }
+  return { route, params };
+};
+
+class PhRouter extends Base {
+  mount() {
+    this.style.display = "contents";
+    this.render();
+    const onPopState = () => this.render();
+    window.addEventListener("popstate", onPopState);
+    this.onRemove(() => window.removeEventListener("popstate", onPopState));
+    const onNavigate = (event) => {
+      const { path, replace } = event.detail;
+      this.navigate(path, replace);
+    };
+    document.addEventListener("ph:navigate", onNavigate);
+    this.onRemove(() => document.removeEventListener("ph:navigate", onNavigate));
+    this.on("click", (event) => {
+      const mouseEvent = event;
+      const target = mouseEvent.target;
+      const link = target instanceof Element ? target.closest("a[href]") : undefined;
+      if (!link || mouseEvent.defaultPrevented || mouseEvent.button !== 0 || mouseEvent.metaKey || mouseEvent.ctrlKey || mouseEvent.shiftKey || mouseEvent.altKey)
+        return;
+      if (link.target || link.hasAttribute("download"))
+        return;
+      const url = new URL(link.getAttribute("href"), window.location.href);
+      if (url.origin !== window.location.origin)
+        return;
+      event.preventDefault();
+      this.navigate(`${url.pathname}${url.search}${url.hash}`);
+    });
+  }
+  navigate(path, replace = false) {
+    window.history[replace ? "replaceState" : "pushState"]({}, "", path);
+    this.render();
+  }
+  render() {
+    const routes = Array.from(this.children).filter((child) => child instanceof HTMLElement && child.hasAttribute("path"));
+    const match = routes.map((route) => matchRoute(route, window.location.pathname)).find(Boolean);
+    for (const route of routes) {
+      const isActive = route === match?.route;
+      route.hidden = !isActive;
+      route.style.display = isActive ? "" : "none";
+    }
+    const router = {
+      pathname: window.location.pathname,
+      search: window.location.search,
+      hash: window.location.hash,
+      params: match?.params ?? {},
+      route: match?.route,
+      push: (path) => this.navigate(path),
+      replace: (path) => this.navigate(path, true),
+      back: () => window.history.back(),
+      forward: () => window.history.forward()
+    };
+    document[CONTEXT].router = router;
+    if (match)
+      this.emit("routechange", { path: window.location.pathname, params: match.params, route: match.route });
+  }
+}
+
+// src/init.ts
+var navigate = (path, replace = false) => {
+  document.dispatchEvent(new CustomEvent("ph:navigate", { detail: { path, replace } }));
+};
+var initialRouterState = {
+  pathname: window.location.pathname,
+  search: window.location.search,
+  hash: window.location.hash,
+  params: {},
+  push: (path) => navigate(path),
+  replace: (path) => navigate(path, true),
+  back: () => window.history.back(),
+  forward: () => window.history.forward()
+};
+var init = async () => {
+  console.group("ph init");
+  !document[CONTEXT] && Object.defineProperty(document, CONTEXT, {
+    value: new Context,
+    writable: false
+  });
+  !document[CONTEXT].router && document[CONTEXT][ADD_SIGNAL]("router", d(initialRouterState));
+  defineComponent("ph-signal", PhSignal);
+  defineComponent("ph-computed", PhComputed);
+  defineComponent("ph-const", PhConst);
+  defineComponent("ph-method", PhMethod);
+  defineComponent("ph-store", PhStore);
+  defineComponent("ph-for", PhFor);
+  defineComponent("ph-either", PhEither);
+  defineComponent("ph-show", PhShow);
+  defineComponent("ph-if", PhIf);
+  defineComponent("ph-slot", PhSlot);
+  defineComponent("ph-router", PhRouter);
+  defineComponent("ph-dynamic", PhDynamic);
+  defineComponent("ph-component", PhComponent);
+  const tw = noTemplateTreeWalker(document.body);
+  while (tw.nextNode()) {
+    const element = tw.currentNode;
+    renameShortcutAttributes(element);
+  }
+  processTemplateSyntax(document.body);
+  processAttributesForChildrenElements(document.body, document[CONTEXT]);
+  PhFor.processForElements(document.body);
+  console.groupEnd();
+};
+
+// src/ph.ts
+var ph_default = {
+  init
+};
+export {
+  ph_default as default,
+  init
+};
