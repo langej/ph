@@ -33,7 +33,7 @@
 ```html
 <head>
     <script type="module">
-        import ph from 'https://cdn.jsdelivr.net/gh/langej/ph@latest/dist/ph.js'
+        import ph from 'https://cdn.jsdelivr.net/gh/langej/ph@latest/dist/ph.js' // or /ph.min.js
         ph.init()
     </script>
 </head>
