@@ -1,12 +1,13 @@
 import { effect, signal } from '@preact/signals-core'
 import { CONTEXT, Context, ADD_SIGNAL, resolveContext } from '@elements/declarations/Context'
 import { Base } from '@utils/Base'
-import { createContextComputed, phSlotSyntax, executeDeferredUnmount } from '@utils/Utils'
+import { createContextComputed, executeDeferredUnmount } from '@utils/Utils'
 import { processAttributes, processAttributesForChildrenElements, renameShortcutAttributes, renameShortcutAttributesInTemplate } from '@utils/Attributes'
+import { processTemplateSyntax } from '@elements/declarations/Component'
 
 const createElement = (content: HTMLElement) => {
     const el = content.cloneNode(true) as HTMLElement
-    el.innerHTML = phSlotSyntax(el.innerHTML)
+    processTemplateSyntax(el)
     return el
 }
 

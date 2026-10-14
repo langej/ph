@@ -1,6 +1,6 @@
 import { Base } from '@utils/Base'
 import { createContextMethod } from '@utils/Utils'
-import { ADD_CONST, Context, CONTEXT } from './Context'
+import { ADD_CONST, Context, CONTEXT, processDeclarations } from './Context'
 import { effect } from '@preact/signals-core'
 import { processImports } from './Component'
 
@@ -42,6 +42,8 @@ export class PhStore extends Base {
                     for (const [key, value] of imports) {
                         this[CONTEXT][ADD_CONST](key, value)
                     }
+
+                    processDeclarations(clonedTemplate, this[CONTEXT])
 
                     this.#shadowroot.append(clonedTemplate)
 

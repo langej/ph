@@ -129,3 +129,52 @@ test('test component with properties', async ({ page }) => {
     await page.waitForTimeout(300)
     await expect(page.locator('div[user-id="john123"] > #age')).toHaveText('31')
 })
+
+test('test component with properties passed from computed store value in router without errors', async ({ page }) => {
+    const errors: string[] = []
+    page.on('pageerror', (err) => errors.push(err.message))
+
+    await page.goto('http://localhost:3111/')
+    await page.setContent(
+        createContent(/*html*/ `
+            <ph-store name="app">
+                <template>
+                    <ph-signal name="items" value="{}"></ph-signal>
+                    <script init>
+                        setTimeout(() => {
+                            items = { '1': { id: '1', name: 'Item 1' } }
+                        }, 50)
+                    </script>
+                </template>
+            </ph-store>
+
+            <ph-component tag="child-item">
+                <template properties="item">
+                    <div *show="item" id="item-content">{{ item?.name }}</div>
+                    <div *show="!item" id="not-found">Not found</div>
+                </template>
+            </ph-component>
+
+            <ph-component tag="item-page">
+                <template use-stores="app">
+                    <ph-computed name="item" value="app.items[router.params.id]"></ph-computed>
+                    <child-item .item="item"></child-item>
+                </template>
+            </ph-component>
+
+            <ph-router>
+                <item-page path="/item/:id"></item-page>
+            </ph-router>
+        `),
+        { waitUntil: 'domcontentloaded' },
+    )
+
+    await page.evaluate(() => {
+        window.history.pushState({}, '', '/item/1')
+        window.dispatchEvent(new PopStateEvent('popstate'))
+    })
+
+    await expect(page.locator('#item-content')).toHaveText('Item 1')
+    await expect(page.locator('#not-found')).toBeHidden()
+    expect(errors).toEqual([])
+})

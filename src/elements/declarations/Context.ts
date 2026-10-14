@@ -1,6 +1,4 @@
-import { Base } from '@utils/Base'
-import { createContextMethod } from '@utils/Utils'
-import { createContextComputed } from '@utils/Utils'
+import { createContextMethod, createContextComputed } from '@utils/Utils'
 import { signal, type ReadonlySignal, effect } from '@preact/signals-core'
 
 const //
@@ -10,13 +8,6 @@ const //
         } catch (error) {
             console.error(error)
         }
-    },
-    getAttributes = (element: Base) => {
-        const //
-            context = resolveContext(element),
-            name = element.getAttribute('name'),
-            value = element.getAttribute('value')
-        return { context, name, value }
     }
 
 export const //
@@ -77,6 +68,8 @@ export class Context {
             set(v) {
                 s.value = v
             },
+            configurable: true,
+            enumerable: true,
         })
     }
 
@@ -85,92 +78,70 @@ export class Context {
             get() {
                 return c.value
             },
+            configurable: true,
+            enumerable: true,
         })
     }
 
     [ADD_METHOD](name: string, m: <A, T>(...args: A[]) => T) {
         Object.defineProperty(this, name, {
             value: m,
+            configurable: true,
+            enumerable: true,
         })
     }
 
     [ADD_CONST]<T>(name: string | symbol, v: T) {
-        Object.defineProperty(this, name, { value: v, writable: false })
+        Object.defineProperty(this, name, { value: v, writable: false, configurable: true, enumerable: true })
     }
 }
 
-export class PhSignal extends Base {
-    #handleLocalStorage(localStorageAttribute: string, name: string, context: Context) {
-        if (localStorageAttribute !== null) {
-            const //
-                localStoragePrefix = !!localStorageAttribute ? localStorageAttribute + '/' : '',
-                key = localStoragePrefix + name,
-                localStorageValue = localStorage.getItem(key)
-            if (localStorageValue) context[name] = JSON.parse(localStorageValue)
-            effect(() => {
-                localStorage.setItem(key, JSON.stringify(context[name]))
-            })
-        }
-    }
-
-    mount() {
-        const { name, value, context } = getAttributes(this)
-        if (name && value && context) {
-            const //
-                typedValue = getTypedValue({ value, context }),
-                localStorageAttribute = this.getAttribute('local-storage')
-            context[ADD_SIGNAL](name, signal(typedValue))
-            if (localStorageAttribute !== null) this.#handleLocalStorage(localStorageAttribute, name, context)
-        }
-        this.remove()
-    }
-}
-
-export class PhComputed extends Base {
-    mount() {
-        const { name, value, context } = getAttributes(this)
-        if (name && value && context) {
-            const typedValue = createContextComputed(context, value)
-            context[ADD_COMPUTED](name, typedValue)
-        }
-        this.remove()
-    }
-}
-
-export class PhConst extends Base {
-    mount() {
-        const { name, value, context } = getAttributes(this)
-        if (name && value && context) {
-            const typedValue = getTypedValue({ value, context })
-            context[ADD_CONST](name, typedValue)
-        }
-        this.remove()
-    }
-}
-
-export class PhMethod extends Base {
-    mount() {
-        this.style.display = 'none'
-
-        const //
-            { context, name } = getAttributes(this),
-            scriptElement = this.querySelector('script'),
-            body = scriptElement?.textContent.trim() ?? '',
-            args = scriptElement
+export const processDeclarations = (root: DocumentFragment | Element, context: Context) => {
+    const declarations = root.querySelectorAll('ph-signal, ph-computed, ph-const, ph-method')
+    for (const el of declarations) {
+        const tagName = el.tagName.toLowerCase()
+        const name = el.getAttribute('name')
+        if (tagName === 'ph-signal') {
+            const value = el.getAttribute('value')
+            if (name && value) {
+                const typedValue = getTypedValue({ value, context })
+                const localStorageAttribute = el.getAttribute('local-storage')
+                context[ADD_SIGNAL](name, signal(typedValue))
+                if (localStorageAttribute !== null) {
+                    const localStoragePrefix = !!localStorageAttribute ? localStorageAttribute + '/' : ''
+                    const key = localStoragePrefix + name
+                    const localStorageValue = localStorage.getItem(key)
+                    if (localStorageValue) context[name] = JSON.parse(localStorageValue)
+                    effect(() => {
+                        localStorage.setItem(key, JSON.stringify(context[name]))
+                    })
+                }
+            }
+        } else if (tagName === 'ph-computed') {
+            const value = el.getAttribute('value')
+            if (name && value) {
+                const typedValue = createContextComputed(context, value)
+                context[ADD_COMPUTED](name, typedValue)
+            }
+        } else if (tagName === 'ph-const') {
+            const value = el.getAttribute('value')
+            if (name && value) {
+                const typedValue = getTypedValue({ value, context })
+                context[ADD_CONST](name, typedValue)
+            }
+        } else if (tagName === 'ph-method') {
+            const scriptElement = el.querySelector('script')
+            const body = scriptElement?.textContent.trim() ?? ''
+            const args = scriptElement
                 ?.getAttribute('args')
                 ?.split(',')
-                ?.map((arg) => {
-                    const [argName, argType] = arg.split(':').map((a) => a.trim())
-                    return { name: argName, type: argType }
-                }),
-            joined = args?.map((arg) => arg.name).join(',')
-        if (name && context && body) {
-            const method = createContextMethod(context, body, joined)
-            context[ADD_METHOD](name, method)
-        } else {
-            if (!context) this.log('no context provided!')
-            if (!body) this.log('no body provided!')
+                ?.map((arg) => arg.split(':')[0].trim())
+                .join(',')
+            if (name && body) {
+                const method = createContextMethod(context, body, args)
+                context[ADD_METHOD](name, method)
+            }
         }
-        this.remove()
+        el.remove()
     }
 }

@@ -1,4 +1,4 @@
-import { ADD_SIGNAL, Context, CONTEXT, PhComputed, PhMethod, PhSignal, PhConst, type RouterState } from '@elements/declarations/Context'
+import { ADD_SIGNAL, Context, CONTEXT, processDeclarations, type RouterState } from '@elements/declarations/Context'
 import { PhComponent, processTemplateSyntax } from '@elements/declarations/Component'
 import { PhIf } from '@elements/control-flow/If'
 import { PhShow } from '@elements/control-flow/Show'
@@ -38,10 +38,6 @@ export const init = async () => {
 
     !document[CONTEXT].router && document[CONTEXT][ADD_SIGNAL]('router', signal(initialRouterState))
 
-    defineComponent('ph-signal', PhSignal)
-    defineComponent('ph-computed', PhComputed)
-    defineComponent('ph-const', PhConst)
-    defineComponent('ph-method', PhMethod)
     defineComponent('ph-store', PhStore)
     defineComponent('ph-for', PhFor)
     defineComponent('ph-either', PhEither)
@@ -51,6 +47,8 @@ export const init = async () => {
     defineComponent('ph-router', PhRouter)
     defineComponent('ph-dynamic', PhDynamic)
     defineComponent('ph-component', PhComponent)
+
+    processDeclarations(document.body, document[CONTEXT])
 
     const tw = noTemplateTreeWalker(document.body)
     while (tw.nextNode()) {

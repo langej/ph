@@ -3,7 +3,7 @@ import { PhFor } from '@elements/control-flow/For'
 import { Base } from '@utils/Base'
 import { createContextMethod, noTemplateTreeWalker, defineComponent, phSlotSyntax, toCamelCase, Dispose } from '@utils/Utils'
 import { processAttributesForChildrenElements, renameShortcutAttributesInTemplate } from '@utils/Attributes'
-import { ADD_CONST, ADD_SIGNAL, ADD_SLOT, CONTEXT, Context } from './Context'
+import { ADD_CONST, ADD_SIGNAL, ADD_SLOT, CONTEXT, Context, processDeclarations } from './Context'
 import { READY } from './Store'
 
 type ImportMap = {
@@ -179,14 +179,20 @@ const //
                 const //
                     storePromises = spec.stores?.map((store) => document[CONTEXT][`$${store}`][READY])
                 await Promise.all(storePromises ?? [])
+                if (!this.isConnected) return
+
                 for (const store of spec.stores ?? []) {
                     if (!this[CONTEXT][store]) this[CONTEXT][ADD_CONST](store, document[CONTEXT][`$${store}`])
                 }
 
                 const allImports = await importPromises
+                if (!this.isConnected) return
+
                 for (const [key, value] of allImports) {
                     if (!this[CONTEXT][key]) this[CONTEXT][ADD_CONST](key, value)
                 }
+
+                processDeclarations(clonedTemplate, this[CONTEXT])
 
                 // mount template to element
                 const root = this.#shadowRoot
@@ -200,6 +206,7 @@ const //
 
                 // run on mount function if exists
                 await onMountFunction?.()
+                if (!this.isConnected) return
 
                 // query all children for replacing functional attributes
                 const childrenDisposes = processAttributesForChildrenElements(root, this[CONTEXT])
@@ -246,10 +253,25 @@ const //
 
 export const //
     processTemplateSyntax = (root: DocumentFragment | Element) => {
-        const tw = noTemplateTreeWalker(root)
-        while (tw.nextNode()) {
-            const element = tw.currentNode as Element
-            element.innerHTML = phSlotSyntax(element.innerHTML)
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, (node: Node) => {
+            const parent = node.parentElement
+            if (parent && (parent.tagName === 'TEMPLATE' || parent.tagName === 'SCRIPT' || parent.tagName === 'STYLE')) {
+                return NodeFilter.FILTER_REJECT
+            }
+            return node.nodeValue && node.nodeValue.includes('{{') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
+        })
+
+        const textNodes: Text[] = []
+        while (walker.nextNode()) {
+            textNodes.push(walker.currentNode as Text)
+        }
+
+        for (const textNode of textNodes) {
+            if (!textNode.nodeValue || !textNode.nodeValue.includes('{{')) continue
+            const html = phSlotSyntax(textNode.nodeValue)
+            const template = document.createElement('template')
+            template.innerHTML = html
+            textNode.replaceWith(...template.content.childNodes)
         }
     },
     parseImportAttribute = (importAttr: string | null): ImportMap | undefined => {
